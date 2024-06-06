@@ -14,7 +14,22 @@ const config: Config = {
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
     },
+    fontFamily: {
+      'poppins' : ['Poppins', 'sans-serif'],
+      'montserrat' : ['Montserrat', 'sans-serif'],
+      'roboto' : ['"Roboto"', 'sans-serif'],
+      'quicksand' : ['"Quicksand"', 'sans-serif'],
+      'handrawn' : ['"Delicious Handrawn"', 'cursive'],
+    },
+    // colors: {
+    //   'blitz' : '#3f7099'
+    // }
   },
-  plugins: [],
+  plugins: [
+    require('daisyui')
+  ],
+  daisyui: {
+    themes: ["bumblebee", "dark", "cmyk"],
+  },
 };
 export default config;
