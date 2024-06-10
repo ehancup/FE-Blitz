@@ -68,7 +68,7 @@ const Navbar = () => {
         </div>
       ) : (
         <div className="flex flex-row">
-          <div className="flex flex-row gap-3">
+          <div className="flex-row gap-3 mr-3 hidden sm:flex">
             <button className="btn btn-ghost btn-square btn-sm tooltip tooltip-bottom" data-tip="cart" onClick={() => router.push('/cart')}>
               <div className="indicator">
               <span className="indicator-item badge badge-primary badge-sm"></span>

@@ -1,6 +1,6 @@
 "use client";
 import { ReactElement, ReactNode } from "react";
-import { HomeIcon, InboxStackIcon, ShoppingBagIcon } from "@heroicons/react/24/outline";
+import { HomeIcon, InboxStackIcon, ShoppingBagIcon, ArchiveBoxIcon } from "@heroicons/react/24/outline";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { HtmlContext } from "next/dist/server/future/route-modules/app-page/vendored/contexts/entrypoints";
 import useStoreModule from "@/lib/store";
@@ -30,6 +30,11 @@ const menus: { label: string; route: string; icon: ReactElement }[] = [
     route: "/etalase",
     icon: <InboxStackIcon className="h-5 font-bold" />,
   },
+  {
+    label: "Order",
+    route: "/order",
+    icon: <ArchiveBoxIcon className="h-5 font-bold" />,
+  },
 ];
 
 const Template = ({ children }: TemplateProps) => {
@@ -50,7 +55,7 @@ const Template = ({ children }: TemplateProps) => {
 
   console.log(params);
   return (
-    <div className="flex flex-row">
+    <div className="flex flex-row w-full">
       <div className="w-60 bg-base-100 shadow-xl min-h-screen p-4 flex flex-col max-h-screen sticky top-0">
         <button
           className="btn btn-ghost text-3xl text-blitz w-fit"

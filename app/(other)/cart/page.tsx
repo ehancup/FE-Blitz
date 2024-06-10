@@ -15,6 +15,8 @@ import useOrderPayload from "@/lib/hook/useOrderPayload";
 import SelectInput from "@/components/selectInput";
 import useOption from "@/lib/hook/useOption";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import useOrderModule from "@/lib/order";
 // import { Product } from "@/lib/product/interface";
 
 // interface Store {
@@ -48,6 +50,8 @@ export function groupCartItemsByStore(p: Cart[]): GroupedByStoreItem[] {
 
 const Page = () => {
   const { useMyCart, useRealMyCart, useCartAmount } = useCartModule();
+  const {useCreateOrder} = useOrderModule();
+  const {mutate, isPending} = useCreateOrder()
   //   const [orderPayload, setOrderPayload] = useState<{product_id: string, quantity: number}[]>([])
   const {
     payload: order,
@@ -62,6 +66,7 @@ const Page = () => {
 
   const { data: amount, isLoading: amountLoad } = useCartAmount(order);
   const { optionAddress } = useOption();
+  const router = useRouter()
 
   // const [loading, setLoading] = useState<boolean>(true);
   // const [grouped, setGrouped] = useState<GroupedByStoreItem[]>([]);
@@ -124,7 +129,7 @@ const Page = () => {
                 name=""
                 id="all"
                 className="checkbox checkbox-sm"
-                checked={checked.isAllCheced}
+                checked={checked.isAllCheced && rill?.data.length != 0}
                 onChange={() => {
                   if (checked.isAllCheced) {
                     addForce([]);
@@ -147,53 +152,60 @@ const Page = () => {
               <p className="">Select All</p>
             </label>
           </div>
-          {data?.map((dt, i) => {
-            const cartInclude = dt.items.map((item) => item.id);
-            const isChecked = order.every((i) => order.includes(i));
-            const result = allElementsExist(cartInclude, order);
-            console.log(cartInclude);
-            return (
-              <div
-                className="w-full px-4 pt-3 flex flex-col rounded-lg border border-base-200"
-                key={i}
-              >
-                <div className="w-full flex flex-row ">
-                  <label
-                    className="flex flex-row items-center gap-3"
-                    htmlFor={`store[${i}]`}
-                  >
-                    <input
-                      type="checkbox"
-                      name=""
-                      id={`store[${i}]`}
-                      className="checkbox checkbox-sm"
-                      checked={result}
-                      onChange={(o) => {
-                        if (o.target.checked) {
-                          const selected: string[] = Array.from(
-                            new Set([...order, ...cartInclude])
-                          );
-                          addForce(selected);
-                        } else {
-                          const filtered = order.filter(
-                            (k) => !cartInclude.includes(k)
-                          );
-                          addForce(filtered);
-                        }
-                      }}
-                    />
-                    <p className="text-sm font-poppins font-bold">
-                      {dt.store.name}
-                    </p>
-                  </label>
+          {rill?.data.length == 0 ? (
+            <div className="w-full py-5 flex flex-col items-center justify-center rounded-lg border border-base-200">
+              <h1 className="">you have no product in cart</h1>
+              <button className="btn btn-neutral btn-sm mt-3" onClick={() => router.push('/')}>Go shopping</button>
+            </div>
+          ) : (
+            data?.map((dt, i) => {
+              const cartInclude = dt.items.map((item) => item.id);
+              const isChecked = order.every((i) => order.includes(i));
+              const result = allElementsExist(cartInclude, order);
+              console.log(cartInclude);
+              return (
+                <div
+                  className="w-full px-4 pt-3 flex flex-col rounded-lg border border-base-200"
+                  key={i}
+                >
+                  <div className="w-full flex flex-row ">
+                    <label
+                      className="flex flex-row items-center gap-3"
+                      htmlFor={`store[${i}]`}
+                    >
+                      <input
+                        type="checkbox"
+                        name=""
+                        id={`store[${i}]`}
+                        className="checkbox checkbox-sm"
+                        checked={result}
+                        onChange={(o) => {
+                          if (o.target.checked) {
+                            const selected: string[] = Array.from(
+                              new Set([...order, ...cartInclude])
+                            );
+                            addForce(selected);
+                          } else {
+                            const filtered = order.filter(
+                              (k) => !cartInclude.includes(k)
+                            );
+                            addForce(filtered);
+                          }
+                        }}
+                      />
+                      <p className="text-sm font-poppins font-bold">
+                        {dt.store.name}
+                      </p>
+                    </label>
+                  </div>
+                  {dt.items.map((item, i) => {
+                    // const [qty, setQty] = useState()
+                    return <CartItem item={item} key={i} />;
+                  })}
                 </div>
-                {dt.items.map((item, i) => {
-                  // const [qty, setQty] = useState()
-                  return <CartItem item={item} key={i} />;
-                })}
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
         <div className="w-80 border rounded-lg border-base-300 p-5 flex flex-col h-fit sticky top-20">
           <h1 className="text- font-bold font-quicksand">Shopping summary</h1>
@@ -238,14 +250,17 @@ const Page = () => {
                   "Please order something and select the destination"
                 );
               } else {
-                console.log({
+
+                const dt = {
                   data: order,
                   address: address,
-                });
+                }
+                console.log(dt);
+                mutate(dt)
               }
             }}
           >
-            {amountLoad ? (
+            {amountLoad || isPending ? (
               <span className="loading loading-spinner"></span>
             ) : (
               `Order ${order.length < 1 ? "" : `(${order.length})`}`

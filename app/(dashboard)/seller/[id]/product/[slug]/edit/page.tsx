@@ -9,6 +9,7 @@ import useProductModule from "@/lib/product/product";
 import { Form, FormikProvider, getIn, useFormik } from "formik";
 import { useParams, useRouter } from "next/navigation";
 import Swal from "sweetalert2";
+import { PlusIcon } from "@heroicons/react/24/outline";
 import * as yup from "yup";
 
 const updateProductSchema = yup.object().shape({
@@ -25,8 +26,13 @@ const Page = () => {
   const router = useRouter();
   const { useEtalaseStore } = useOption();
   const { optionEtalase } = useEtalaseStore(params.id as string);
-  const { useDetailProduct, useDeleteImage, useUpdateProduct } = useProductModule();
-  const {mutate, isPending} = useUpdateProduct(params.id as string, params.slug as string)
+  const { useDetailProduct, useDeleteImage, useUpdateProduct, useAddImage } =
+    useProductModule();
+  const { mutate, isPending } = useUpdateProduct(
+    params.id as string,
+    params.slug as string
+  );
+  const {mutate: addImage} = useAddImage(params.id as string, params.slug as string);
   const { data, isLoading } = useDetailProduct(params.slug as string);
   const { mutate: deleteImage } = useDeleteImage(params.id as string);
   console.log(data);
@@ -43,13 +49,13 @@ const Page = () => {
     validationSchema: updateProductSchema,
     enableReinitialize: true,
     onSubmit: (value: UpdateProductPayload) => {
-        value.stock = Number(value.stock)
-        console.log(value);
-        mutate(value, {
-            onSuccess(data, variables, context) {
-                router.push(`/seller/${params.id}/product/${params.slug}`)
-            },
-        })
+      value.stock = Number(value.stock);
+      console.log(value);
+      mutate(value, {
+        onSuccess(data, variables, context) {
+          router.push(`/seller/${params.id}/product/${params.slug}`);
+        },
+      });
     },
   });
   const {
@@ -102,6 +108,15 @@ const Page = () => {
             </div>
           );
         })}
+        <label
+          htmlFor="file"
+          className="w-full cursor-pointer aspect-square rounded-md border-dashed border-2 border-gray-500 flex items-center justify-center"
+        >
+          <PlusIcon className="h-4 text-gray-500" />
+          <input type="file" name="file" id="file" className="hidden" accept="image/*" onChange={(e) => {
+            addImage(e.target.files![0])
+          }} />
+        </label>
       </div>
       <div className="">
         <FormikProvider value={formik}>
@@ -132,7 +147,7 @@ const Page = () => {
             />
             <InputCurrency
               sm
-            //   value={values.description}
+              //   value={values.description}
               id="price"
               name="price"
               placeholder="enter price in rupiah"
@@ -189,8 +204,16 @@ const Page = () => {
               label="etalase"
             />
             <div className="flex flex-row justify-between mt-3">
-                <button className="btn btn-error btn-sm" type="button" onClick={() => router.back()}>back</button>
-                <button className="btn btn-info btn-sm" type="submit">submit</button>
+              <button
+                className="btn btn-error btn-sm"
+                type="button"
+                onClick={() => router.back()}
+              >
+                back
+              </button>
+              <button className="btn btn-info btn-sm" type="submit">
+                submit
+              </button>
             </div>
           </Form>
         </FormikProvider>

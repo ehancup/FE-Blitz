@@ -11,7 +11,7 @@ export const formatDate = (date: number | string | Date, args?: { format?: 'defa
     return format(formatValue, 'yyyy-MM-dd', { locale: id })
   }
 
-  return format(formatValue, 'dd/MM/yyyy', { locale: id });
+  return format(formatValue, 'd MMM yyyy', { locale: id });
 };
 
 export const formatDateServer = (date: number | string | Date) => {
@@ -25,7 +25,7 @@ export const formatDateServer = (date: number | string | Date) => {
 export const formatDateTime = (date: number | string | Date) => {
   const formatValue = typeof date === 'string' ? new Date(date) : date;
 
-  return format(formatValue, 'dd/MM/yyyy HH:mm', { locale: id });
+  return format(formatValue, 'd MMMM yyyy HH:mm', { locale: id });
 };
 
 export const getCurrentDate = () => format(new Date(), 'EEEE, dd MMMM yyyy', { locale: id });

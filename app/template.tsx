@@ -12,7 +12,7 @@ const Template = ({ children }: TemplateProps) => {
   return (
     <div className="">
       <Navbar />
-      <div className="w-full" onClick={() => popCls()}>
+      <div className="w-full flex flex-row justify-center items-start" onClick={() => popCls()}>
         {children}
       </div>
     </div>

@@ -114,3 +114,7 @@ interface UploadMultiResponse {
     }[];
   };
 }
+
+export interface DeleteProductBulkPayload {
+  data: string[]
+}

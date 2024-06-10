@@ -55,7 +55,7 @@ export default function Home() {
   };
 
   return (
-    <div className=" px-3 sm:px-52 mt-32 flex flex-col">
+    <div className=" px-3 sm:px-0 w-full max-w-[1320px] pt-32 flex flex-col">
       <h1 className="text-3xl font-bold">All Product</h1>
       <div className="w-full mt-5 grid grid-cols-2 sm:grid-cols-6 gap-x-3 gap-y-5">
         {products.map((product, i) => {

@@ -21,18 +21,20 @@ export interface LoginResponse {
     }
 }
 
+export interface Profile {
+    id: string;
+    name: string;
+    email: string;
+    avatar: string;
+    role: "user" | "seller" | "admin";
+    gender: "pria" | "wanita" | "unknown";
+    refresh_token: string;
+    provider: "credential";
+    created_at: string;
+    updated_at: string;
+    last_logged_in: string;
+}
+
 export interface ProfileResponse {
-    data: {
-        id: string;
-        name: string;
-        email: string;
-        avatar: string;
-        role: "user" | "seller" | "admin";
-        gender: "pria" | "wanita" | "unknown";
-        refresh_token: string;
-        provider: "credential";
-        created_at: string;
-        updated_at: string;
-        last_logged_in: string;
-    }
+    data: Profile
 }

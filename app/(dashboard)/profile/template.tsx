@@ -6,6 +6,7 @@ import {
   ShoppingCartIcon,
   Cog6ToothIcon,
   ChartBarIcon,
+  CreditCardIcon,
   TagIcon,
   ShoppingBagIcon,
 } from "@heroicons/react/24/outline";
@@ -45,11 +46,11 @@ const Template = ({ children }: TemplateProps) => {
       route: "/store",
       icon: <ShoppingBagIcon className="h-4"/>
     },
-    // {
-    //   label: "Konsumen",
-    //   route: "/konsumen",
-    //   icon: <TagIcon className="h-4"/>
-    // },
+    {
+      label: "Transaction",
+      route: "/transaction",
+      icon: <CreditCardIcon className="h-4"/>
+    },
     // {
     //   label: "Order",
     //   route: "/order",

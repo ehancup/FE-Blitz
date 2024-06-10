@@ -38,7 +38,8 @@ export default function RootLayout({
           duration: 1500
         }}
         containerStyle={{
-          top: 80
+          top: 80,
+          zIndex: 999999999
         }}
          reverseOrder={false} />
       </body>

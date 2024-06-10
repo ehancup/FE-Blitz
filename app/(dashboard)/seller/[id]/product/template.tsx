@@ -5,6 +5,8 @@ import useProductModule from "@/lib/product/product";
 import clsx from "clsx";
 import { useParams, useRouter } from "next/navigation";
 import { ReactNode, useMemo, useState } from "react";
+import toast from "react-hot-toast";
+import Swal from "sweetalert2";
 
 interface TemplateProps {
     children: ReactNode;
@@ -14,7 +16,7 @@ const Template = ({children}: TemplateProps) => {
   const [deletePayload, setDeletePayload] = useState<string[]>([]);
   const router = useRouter()
   const params = useParams();
-  const { useProductByStore } = useProductModule();
+  const { useProductByStore, useDeleteBulk } = useProductModule();
   const {
     data: allPro,
     isLoading: allLoad,
@@ -25,6 +27,33 @@ const Template = ({children}: TemplateProps) => {
     handlePage,
     handlePageSize,
   } = useProductByStore((params as { id: string }).id);
+
+  const {mutate, isPending} = useDeleteBulk(params.id as string)
+
+  const deleteMany = () => {
+    if (deletePayload.length <= 0) {
+      toast.error('select at least one product');
+      return ;
+    }
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        mutate({data: deletePayload}, {
+          onSuccess(data, variables, context) {
+            router.push(`/seller/${params.id}/product`)
+          },
+        });
+      }
+    });
+  }
 
   const checked = useMemo(() => {
     if (!allPro) {
@@ -41,7 +70,7 @@ const Template = ({children}: TemplateProps) => {
         <div className="flex-1 rounded-lg shadow-lg h-fit">
           <div className="flex flex-row px-3 pt-3 justify-end gap-2">
             {deletePayload.length != 0 ? (
-              <button className="btn btn-sm btn-error">Delete checked</button>
+              <button className="btn btn-sm btn-error" onClick={deleteMany}>Delete checked</button>
             ) : (
               <></>
             )}

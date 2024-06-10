@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { axiosClient } from "../axios/axiosClient";
 import {
   CreateProductPayload,
+  DeleteProductBulkPayload,
   ProductDetailResponse,
   ProductRandomResponse,
   ProductResponse,
@@ -46,6 +47,14 @@ const useProductModule = () => {
     await axiosClient
       .get("/product/list", { params: { ...params, store: route } })
       .then((res) => res.data);
+  const getStoreProductEtalase = async (
+    params: FilterPage,
+    route: string,
+    etalase: string
+  ): Promise<ProductResponse> =>
+    await axiosClient
+      .get("/product/list", { params: { ...params, store: route, etalase_id: etalase } })
+      .then((res) => res.data);
 
   const getProduct = async (
     params: FilterPage,
@@ -89,6 +98,49 @@ const useProductModule = () => {
     const { data, isLoading } = useQuery({
       queryKey: ["product/byStore", [filterQuery]],
       queryFn: () => getStoreProduct(filterQuery, route),
+    });
+
+    // console.log(data);
+
+    return {
+      data,
+      isLoading,
+      query,
+      setQuery,
+      setFilterQuery,
+      handleClear,
+      handlePage,
+      handlePageSize,
+    };
+  };
+  const useProductByStoreAndEtalase = (route: string, etalase: string) => {
+    let [query, setQuery] = useState<FilterPage>(defaultFilter);
+    let [filterQuery, setFilterQuery] = useState<FilterPage>(defaultFilter);
+    console.log(filterQuery);
+    const handlePage = (page: number) => {
+      setFilterQuery((prev) => {
+        return {
+          ...prev,
+          page: page,
+        };
+      });
+      setQuery((prev) => ({ ...prev, page: page }));
+    };
+    const handlePageSize = (e: ChangeEvent<any>) => {
+      setQuery((params) => ({ ...params, pageSize: e.target.value, page: 1 }));
+      setFilterQuery((params) => ({
+        ...params,
+        pageSize: e.target.value,
+        page: 1,
+      }));
+    };
+    const handleClear = () => {
+      setFilterQuery(defaultFilter);
+      setQuery(defaultFilter);
+    };
+    const { data, isLoading } = useQuery({
+      queryKey: ["product/byStore", [filterQuery]],
+      queryFn: () => getStoreProductEtalase(filterQuery, route, etalase),
     });
 
     // console.log(data);
@@ -190,7 +242,7 @@ const useProductModule = () => {
       mutationFn: async (e: string) =>
         await axiosAuthClient.delete(`/product/delete-image/${store}/${e}`),
       onSuccess(data, variables, context) {
-        toast.success("product image deleted successfully");
+        toast.success("image deleted successfully");
         queryClient.invalidateQueries({
           queryKey: ["product/byStore"],
         });
@@ -247,6 +299,64 @@ const useProductModule = () => {
 
     return { mutate, isPending };
   };
+
+  const useAddImage = (storeId: string, productId: string) => {
+    const {mutate, isPending} = useMutation({
+      mutationFn: async (e: File | undefined) => {
+        if (!e) {
+          toast.error('please enter image')
+          return;
+        }
+
+        const compiled = new FormData()
+        compiled.append('file', e)
+
+        const response = await axiosClient.post("/upload/file", compiled, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          }
+        })
+
+        if (response.status !== 201) {
+          toast.error((response as any).response.data.message)
+          return;
+        } else {
+          return axiosAuthClient.put(`/product/add-image/${storeId}/${productId}`, {image : response.data.data.file_url})
+        }
+      },
+      onSuccess(data, variables, context) {
+        toast.success('add image success')
+        queryClient.invalidateQueries({
+          queryKey: ["product/detail"]
+        })
+      },
+      onError(error: AxiosError<any>, variables, context) {
+        toast.error(error.response?.data.message)
+      },
+    })
+
+    return {mutate, isPending}
+  }
+
+  const useDeleteBulk = (storeId: string) => {
+    const {mutate, isPending} = useMutation({
+      mutationFn: async (e: DeleteProductBulkPayload) => await axiosAuthClient.put(`/product/delete-bulk/${storeId}`, e),
+      onSuccess(data, variables, context) {
+        toast.success("product deleted successfully");
+        queryClient.invalidateQueries({
+          queryKey: ["product/byStore"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["product/detail"],
+        });
+      },
+      onError(error: AxiosError<any>, variables, context) {
+        toast.error(error.response?.data.message);
+      },
+    })
+
+    return {mutate, isPending}
+  }
   return {
     useProductByStore,
     useDetailProduct,
@@ -255,7 +365,10 @@ const useProductModule = () => {
     useUpdateProduct,
     useProducts,
     useDeleteProduct,
-    useRandomProduct
+    useRandomProduct,
+    useProductByStoreAndEtalase,
+    useAddImage,
+    useDeleteBulk,
   };
 };
 

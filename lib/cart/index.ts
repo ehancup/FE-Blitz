@@ -12,12 +12,19 @@ import {
 import toast from "react-hot-toast";
 import { groupCartItemsByStore } from "@/app/(other)/cart/page";
 import { useSession } from "next-auth/react";
+import useOrderPayload from "../hook/useOrderPayload";
 // import { Session } from "inspector";
 
 const useCartModule = () => {
   const axiosAuthClient = useAxiosAuth();
   const { data: session } = useSession();
   const queryClient = useQueryClient();
+  const {
+    payload: order,
+    addPayload,
+    addForce,
+    addMany,
+  } = useOrderPayload((p) => p);
   const getMyCart = async (): Promise<CartResponse> =>
     await axiosAuthClient.get("/cart/my-cart").then((res) => res.data);
   const getTotalAmount = async (e: CartAmountPayload) : Promise<CartAmountResponse> =>
@@ -104,7 +111,31 @@ const useCartModule = () => {
 
     return { mutate, isPending };
   };
-  return { useCreateCart, useMyCart, useUpdateQty, useRealMyCart, useCartAmount };
+
+  const useDeleteCart = (e: string) => {
+    const {mutate, isPending} = useMutation({
+      mutationFn: async () => axiosAuthClient.delete(`/cart/delete/${e}`),
+      onSuccess(data, variables, context) {
+        // toast.success("set value");
+        queryClient.invalidateQueries({
+          queryKey: ["cart/myCart"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["cart/myRealCart"],
+        });
+        const filtered = order.filter((n) => n !== e);
+            addForce(filtered);
+
+        toast.success('delete success')
+      },
+      onError(error: AxiosError<any>, variables, context) {
+        toast.error(error.response?.data.message);
+      },
+    })
+
+    return {mutate, isPending}
+  }
+  return { useCreateCart, useMyCart, useUpdateQty, useRealMyCart, useCartAmount, useDeleteCart };
 };
 
 export default useCartModule;

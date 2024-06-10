@@ -26,6 +26,10 @@ import { Swiper as SwipeType } from "swiper/types";
 import { signIn, useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import useCartModule from "@/lib/cart";
+import SelectInput from "@/components/selectInput";
+import useOption from "@/lib/hook/useOption";
+import useOrderModule from "@/lib/order";
+import { SingleOrderPayload } from "@/lib/order/interface";
 // import { useRouter } from "next/router";
 
 const Page = () => {
@@ -35,15 +39,21 @@ const Page = () => {
   const [more, setMore] = useState<boolean>(false);
   const { useDetailProduct, useRandomProduct } = useProductModule();
   const { data: random, isLoading: randomLoad } = useRandomProduct();
+  const {useCreateSingleOrder} = useOrderModule()
+  const {mutate: order, isPending: orderLoad} = useCreateSingleOrder()
+  const { optionAddress } = useOption();
   const { useCreateWishlist } = useWishlistModule();
   const { mutate: addWishlist, isPending } = useCreateWishlist();
   const [show, setShow] = useState<number>(0);
+  const [address, setAddress] = useState<string>("");
   const [swiper, setSwiper] = useState<SwipeType | null>(null);
   const { data, isLoading } = useDetailProduct(params.id as string);
   console.log(data);
   const [quantity, setQuantity] = useState<number>(1);
-  const {useCreateCart} = useCartModule();
-  const {mutate: addCart, isPending: cartPending} = useCreateCart(params.id as string)
+  const { useCreateCart } = useCartModule();
+  const { mutate: addCart, isPending: cartPending } = useCreateCart(
+    params.id as string
+  );
 
   const increment = () => {
     if (data?.data.type == "ready_stok") {
@@ -62,11 +72,36 @@ const Page = () => {
 
   const addToCart = () => {
     if (!!session) {
-      addCart({quantity})
+      addCart({ quantity });
     } else {
-      signIn()
+      signIn();
     }
-  }
+  };
+
+  const buyNow = () => {
+    if (address == "") {
+      toast.error("Please enter address");
+    } else {
+      const payload: SingleOrderPayload = {
+        address_id: address,
+        product_id: data?.data.id as string,
+        quantity: quantity
+      }
+
+      order(payload, {
+        onSuccess(data, variables, context) {
+          window.location.reload()
+        },
+      })
+    }
+  };
+  const showBuyNow = () => {
+    if (!!session) {
+      (document.getElementById("my_modal_3") as any)!.showModal();
+    } else {
+      signIn();
+    }
+  };
 
   // const pagin = ()
 
@@ -255,7 +290,7 @@ const Page = () => {
                 </p>
                 <p className="text-sm">
                   <span className="text-gray-500">Etalase : </span>
-                  <button className="btn btn-ghost btn-xs text-blue-600">
+                  <button className="btn btn-ghost btn-xs text-blue-600" onClick={() => router.push(`/store/${data?.data.store.route}/${data?.data.etalase}`)}>
                     {data?.data.etalase.name}
                   </button>
                 </p>
@@ -273,7 +308,7 @@ const Page = () => {
                 </p>
               </div>
               <div className="border-t border-b border-base-200 py-3 flex flex-row items-center mt-3 justify-between">
-                <div className="flex flex-row gap-5">
+                <div className="flex flex-row gap-5 cursor-pointer" onClick={() => router.push(`/store/${data?.data.store.route}`)}>
                   <div
                     className="h-14 w-14 rounded-full"
                     style={{
@@ -345,7 +380,7 @@ const Page = () => {
               <button
                 className="btn btn-xs btn-ghost btn-square"
                 disabled={
-                  quantity == data?.data.stock && data.data.type == "ready_stok"
+                  quantity >= (data?.data.stock as number) && data?.data.type == "ready_stok"
                 }
                 onClick={increment}
               >
@@ -354,9 +389,11 @@ const Page = () => {
             </div>
 
             {data?.data.type == "ready_stok" ? (
-              <p className="flex flex-row gap-1 items-center">
-                Stock :<span className="font-bold">{data?.data.stock}</span>{" "}
-              </p>
+              data.data.stock > 0 ?(<p className="flex flex-row gap-1 items-center">
+                Stock :<span className="font-bold">{data?.data.stock}</span>
+              </p>) : (
+                <p className="text-sm font-bold text-red-500">Out of Stock!!</p>
+              )
             ) : (
               <p className="font-bold">Pre Order</p>
             )}
@@ -367,10 +404,48 @@ const Page = () => {
               Rp{formatRupiah((data?.data.price || 0) * quantity)}
             </p>
           </div>
-          <button className="btn btn-neutral w-full mt-5" onClick={addToCart}>+Cart</button>
-          <button className="btn btn-neutral btn-outline w-full mt-2">
+          <button className="btn btn-neutral w-full mt-5" onClick={addToCart}>
+            +Cart
+          </button>
+          <button
+            className="btn btn-neutral btn-outline w-full mt-2"
+            onClick={showBuyNow}
+          >
             Buy
           </button>
+          <dialog id="my_modal_3" className="modal">
+            <div className="modal-box">
+              <form method="dialog">
+                {/* if there is a button in form, it will close the modal */}
+                <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+                  ✕
+                </button>
+              </form>
+              <h3 className="font-bold text-lg">Select Address</h3>
+              <SelectInput
+                id="selectAddress"
+                name="selectAddress"
+                option={optionAddress}
+                onChange={(e) => {
+                  setAddress(e.target.value);
+                }}
+              />
+              <div className="flex flex-row justify-between items-center gap-10 mt-3">
+                <p className="py-4">
+                  Total will be{" "}
+                  <span className="font-bold">
+                    Rp{formatRupiah((data?.data.price || 0) * quantity)},-
+                  </span>
+                </p>
+                <button className="btn  btn-neutral flex-1" onClick={buyNow}>
+                  Buy ({quantity})
+                </button>
+              </div>
+            </div>
+            <form method="dialog" className="modal-backdrop">
+              <button>close</button>
+            </form>
+          </dialog>
           <div className="w-full flex justify-center mt-3">
             <button
               className="btn btn-xs btn-ghost"

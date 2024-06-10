@@ -9,22 +9,26 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
-import { SingleOrder } from "@/lib/order/interface";
 import useCartModule from "@/lib/cart";
 import useDebouncedValue from "@/lib/hook/useDebounce";
 import useOrderPayload from "@/lib/hook/useOrderPayload";
+import { useRouter } from "next/navigation";
 
 interface CartItemProps {
   item: Cart;
-//   order: string[];
-//   addPayload: (pyld: string) => void;
+  //   order: string[];
+  //   addPayload: (pyld: string) => void;
 }
 
 const CartItem = ({ item }: CartItemProps) => {
   let [qty, setQty] = useState<number>(item.quantity);
-  const { useUpdateQty } = useCartModule();
+  const { useUpdateQty, useDeleteCart } = useCartModule();
+  const { mutate: deleteCart, isPending: deletePending } = useDeleteCart(
+    item.id
+  );
   const { mutate: updateQty, isPending } = useUpdateQty(item.id);
   const debouncedQtyTerm = useDebouncedValue(qty, 500);
+  const router = useRouter();
   const { payload: order, addPayload, addForce } = useOrderPayload((p) => p);
   console.log(order);
 
@@ -60,15 +64,14 @@ const CartItem = ({ item }: CartItemProps) => {
           if (o.target.checked) {
             addPayload(item.id);
           } else {
-              const filtered = order.filter(
-                (n) => n !== item.id
-              );
-              addForce(filtered);
+            const filtered = order.filter((n) => n !== item.id);
+            addForce(filtered);
           }
         }}
       />
       <div
-        className="w-20 aspect-square rounded-md overflow-hidden"
+        className="w-20 aspect-square rounded-md overflow-hidden cursor-pointer"
+        onClick={() => router.push(`/product/detail/${item.product.id}`)}
         style={{
           backgroundImage: `url(${
             (item.product.image as { image: string }[])[0].image
@@ -78,7 +81,10 @@ const CartItem = ({ item }: CartItemProps) => {
         }}
       ></div>
       <div className="flex-1 flex flex-col justify-between h-full">
-        <div className="flex flex-row justify-between items-center gap-5">
+        <div
+          className="flex flex-row justify-between items-center gap-5 cursor-pointer"
+          onClick={() => router.push(`/product/detail/${item.product.id}`)}
+        >
           <div className="flex flex-col flex-1">
             <h1 className="">{item.product.name}</h1>
             {item.product.type == "ready_stok" ? (
@@ -98,9 +104,18 @@ const CartItem = ({ item }: CartItemProps) => {
             <button className="btn btn-sm btn-square btn-ghost text-gray-500 hover:text-black">
               <HeartIcon className="h-5 text-gray-500" />
             </button>
-            <button className="btn btn-sm btn-square btn-ghost text-gray-500 hover:text-black">
-              <TrashIcon className="h-5 text-gray-500" />
-            </button>
+            {deletePending ? (
+              <button className="btn btn-sm btn-square btn-ghost">
+                <span className="loading loading-spinner"></span>
+              </button>
+            ) : (
+              <button
+                className="btn btn-sm btn-square btn-ghost text-gray-500 hover:text-black"
+                onClick={() => deleteCart()}
+              >
+                <TrashIcon className="h-5 text-gray-500" />
+              </button>
+            )}
           </div>
           <div className="flex flex-row w-fit p-1 border border-base-300 rounded-lg gap-2">
             <button
