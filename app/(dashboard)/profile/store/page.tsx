@@ -76,7 +76,7 @@ const Page = () => {
                       <div
                         className="h-14 rounded-full aspect-square"
                         style={{
-                          backgroundImage: `url(${store.avatar})`,
+                          backgroundImage: `url(${store.avatar?.replace('localhost:5002', process.env.IP as string)})`,
                           backgroundSize: "cover",
                           backgroundPosition: "center center",
                         }}

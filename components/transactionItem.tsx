@@ -66,7 +66,7 @@ const TransactionItem = ({ order }: TransactionProps) => {
             <div
               className="w-14 rounded-md overflow-hidden h-14"
               style={{
-                backgroundImage: `url(${order?.orderDetail[0]?.product?.image?.[0]?.image})`,
+                backgroundImage: `url(${order?.orderDetail[0]?.product?.image?.[0]?.image?.replace('localhost:5002', process.env.IP as string)})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center center",
               }}

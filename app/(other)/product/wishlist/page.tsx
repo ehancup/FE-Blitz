@@ -6,11 +6,9 @@ import ProductCard from "@/components/productCart";
 import SelectInput from "@/components/selectInput";
 import useProductModule from "@/lib/product/product";
 import useWishlistModule from "@/lib/wishlist";
-import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
 const Page = () => {
-  const searchParam = useSearchParams();
 
   // const { useProducts } = useProductModule();
   const {useMyWishlist} = useWishlistModule()
@@ -29,7 +27,7 @@ const Page = () => {
 
 
   return (
-    <div className="flex flex-row p-3 sm:px-52 mt-24 gap-5">
+    <div className="flex flex-row p-3 sm:px-0 max-w-[1200px] mt-24 gap-5 w-full">
       <div className="min-h-96 w-52 rounded-lg shadow-lg flex flex-col p-3 h-fit sticky top-28">
         <h1 className="font-medium">Filter</h1>
         <div className="flex flex-col">

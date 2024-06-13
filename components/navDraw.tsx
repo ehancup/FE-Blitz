@@ -69,7 +69,7 @@ const NavDraw = ({ name, role, isOpen = false, image }: NavDrawProps) => {
           <div
             className="h-full w-full rounded-full"
             style={{
-              backgroundImage: `url(${image})`,
+              backgroundImage: `url(${image?.replace('localhost:5002', process.env.IP as string)})`,
               backgroundSize: "cover",
               backgroundPosition: "center center",
             }}
@@ -111,8 +111,8 @@ const NavDraw = ({ name, role, isOpen = false, image }: NavDrawProps) => {
         </div>
       </div>
       <div
-        className={`w-screen flex sm:hidden h-screen fixed  right-0 left-0 rounded-3xl bg-white  flex-col p-1 transition-all duration-300 ${
-          isOpen ? "top-0" : "top-[100vh]"
+        className={`w-screen flex sm:hidden h-screen fixed z-50 right-0 left-0 rounded-3xl bg-white  flex-col p-1 transition-all duration-300 ${
+          isOpen ? "top-0" : "top-[200vh]"
         }`}
       >
         <div className="flex flex-row w-full p-4 gap-3 items-center border-b border-base-200/50 ">
@@ -128,7 +128,7 @@ const NavDraw = ({ name, role, isOpen = false, image }: NavDrawProps) => {
           <div
             className="h-14 w-14 rounded-full"
             style={{
-              backgroundImage: `url(${image})`,
+              backgroundImage: `url(${image?.replace('localhost:5002', process.env.IP as string)})`,
               backgroundSize: "cover",
               backgroundPosition: "center center",
             }}
@@ -161,6 +161,12 @@ const NavDraw = ({ name, role, isOpen = false, image }: NavDrawProps) => {
                 </a>
               </li>
             ))}
+            <li className="text-error" onClick={() => signOut()}>
+              <a>
+              <ArrowLeftStartOnRectangleIcon className="h-4" />
+              Log out
+              </a>
+            </li>
           </ul>
         </div>
       </div>

@@ -1,10 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { axiosClient } from "../axios/axiosClient";
 import {
+  ForgotPassPayload,
   LoginPayload,
   LoginResponse,
   ProfileResponse,
   RegisterPayload,
+  ResetPassPayload,
 } from "./interface";
 import toast from "react-hot-toast";
 import { signIn, signOut, useSession } from "next-auth/react";
@@ -103,41 +105,80 @@ export const useAuthModule = () => {
   };
 
   const useSetAvatar = () => {
-    const {mutate, isPending} = useMutation({
+    const { mutate, isPending } = useMutation({
       mutationFn: async (e: File | undefined) => {
         if (!e) {
-          toast.error('please enter image')
+          toast.error("please enter image");
           return;
         }
 
-        const compiled = new FormData()
-        compiled.append('file', e)
+        const compiled = new FormData();
+        compiled.append("file", e);
 
         const response = await axiosClient.post("/upload/file", compiled, {
           headers: {
-            'Content-Type': 'multipart/form-data',
-          }
-        })
+            "Content-Type": "multipart/form-data",
+          },
+        });
 
         if (response.status !== 201) {
-          toast.error((response as any).response.data.message)
+          toast.error((response as any).response.data.message);
           return;
         } else {
-          return axiosAuthClient.put("/auth/set-avatar", {avatar : response.data.data.file_url})
+          return axiosAuthClient.put("/auth/set-avatar", {
+            avatar: response.data.data.file_url,
+          });
         }
       },
       onSuccess(data, variables, context) {
-        toast.success('set avatar success')
+        toast.success("set avatar success");
         queryClient.invalidateQueries({
-          queryKey: ["auth/profile"]
-        })
+          queryKey: ["auth/profile"],
+        });
       },
       onError(error: AxiosError<any>, variables, context) {
-        toast.error(error.response?.data.message)
+        toast.error(error.response?.data.message);
       },
-    })
+    });
 
-    return {mutate, isPending}
-  }
-  return { useRegister, useLogin, useProfile, useSetAvatar };
+    return { mutate, isPending };
+  };
+
+  const useForgotPassword = () => {
+    const { mutate, isPending } = useMutation({
+      mutationFn: async (e: ForgotPassPayload) =>
+        await axiosClient.post("/auth/forgot-password", e),
+      onSuccess(data, variables, context) {
+        toast.success("email sent");
+      },
+      onError(error: AxiosError<any>, variables, context) {
+        toast.error(error.response?.data.message);
+      },
+    });
+
+    return { mutate, isPending };
+  };
+
+  const useResetPassword = (id: string, token: string) => {
+    const { mutate, isPending } = useMutation({
+      mutationFn: async (e: ResetPassPayload) =>
+        await axiosClient.post(`/auth/reset-password/${id}/${token}`, e),
+      onSuccess(data, variables, context) {
+        toast.success("password reset successfully");
+      },
+      onError(error: AxiosError<any>, variables, context) {
+        toast.error(error.response?.data.message);
+      },
+    });
+
+    return { mutate, isPending };
+  };
+  return {
+    useRegister,
+    useLogin,
+    useProfile,
+    useSetAvatar,
+    useForgotPassword,
+    useResetPassword,
+  };
 };

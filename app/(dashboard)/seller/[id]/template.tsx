@@ -95,7 +95,7 @@ const Template = ({ children }: TemplateProps) => {
                   <div
                     className="h-10 aspect-square rounded-full"
                     style={{
-                      backgroundImage: `url(${dataDetail?.data.avatar})`,
+                      backgroundImage: `url(${dataDetail?.data.avatar?.replace('localhost:5002', process.env.IP as string)})`,
                       backgroundSize: "cover",
                       backgroundPosition: "center center",
                     }}
@@ -129,7 +129,7 @@ const Template = ({ children }: TemplateProps) => {
                           <div
                             className="h-10 aspect-square rounded-full"
                             style={{
-                              backgroundImage: `url(${data.avatar})`,
+                              backgroundImage: `url(${data.avatar?.replace('localhost:5002', process.env.IP as string)})`,
                               backgroundSize: "cover",
                               backgroundPosition: "center center",
                             }}
@@ -158,7 +158,7 @@ const Template = ({ children }: TemplateProps) => {
               <div
                 className="h-10 aspect-square rounded-full"
                 style={{
-                  backgroundImage: `url(${profile?.data.avatar})`,
+                  backgroundImage: `url(${profile?.data.avatar?.replace('localhost:5002', process.env.IP as string)})`,
                   backgroundSize: "cover",
                   backgroundPosition: "center center",
                 }}

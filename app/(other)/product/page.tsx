@@ -6,7 +6,7 @@ import ProductCard from "@/components/productCart";
 import SelectInput from "@/components/selectInput";
 import useProductModule from "@/lib/product/product";
 import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 
 const Page = () => {
   const searchParam = useSearchParams();
@@ -131,4 +131,10 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default function Pg () {
+  return (
+      <Suspense>
+          <Page/>
+      </Suspense>
+  )
+};

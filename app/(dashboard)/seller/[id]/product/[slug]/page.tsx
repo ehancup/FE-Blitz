@@ -40,7 +40,7 @@ const Page = () => {
       <div
         className="w-full aspect-square mt-5 rounded-lg"
         style={{
-          backgroundImage: `url(${data?.data.image[0].image})`,
+          backgroundImage: `url(${data?.data.image[0].image?.replace('localhost:5002', process.env.IP as string)})`,
           backgroundSize: "cover",
           backgroundPosition: "center center",
         }}

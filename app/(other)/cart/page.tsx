@@ -17,6 +17,7 @@ import useOption from "@/lib/hook/useOption";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import useOrderModule from "@/lib/order";
+
 // import { Product } from "@/lib/product/interface";
 
 // interface Store {
@@ -29,29 +30,37 @@ import useOrderModule from "@/lib/order";
 //   items: Cart[];
 // }
 
-export function groupCartItemsByStore(p: Cart[]): GroupedByStoreItem[] {
-  const grouped = p.reduce(
-    (acc: { [key: string]: GroupedByStoreItem }, item: Cart) => {
-      const storeId = item.product.store.id;
-      if (!acc[storeId]) {
-        acc[storeId] = {
-          store: item.product.store,
-          items: [],
-        };
-      }
-      acc[storeId].items.push(item);
-      return acc;
-    },
-    {}
-  );
+// export function groupCartItemsByStore(p: Cart[]): GroupedByStoreItem[] {
+//   const grouped = p.reduce(
+//     (acc: { [key: string]: GroupedByStoreItem }, item: Cart) => {
+//       const storeId = item.product.store.id;
+//       if (!acc[storeId]) {
+//         acc[storeId] = {
+//           store: item.product.store,
+//           items: [],
+//         };
+//       }
+//       acc[storeId].items.push(item);
+//       return acc;
+//     },
+//     {}
+//   );
 
-  return Object.values(grouped);
-}
+//   return Object.values(grouped);
+// }
+
+const defaultOption = [
+  {
+    label: "you dont have any address",
+    value: "",
+  },
+];
 
 const Page = () => {
   const { useMyCart, useRealMyCart, useCartAmount } = useCartModule();
-  const {useCreateOrder} = useOrderModule();
-  const {mutate, isPending} = useCreateOrder()
+  const { useCreateOrder } = useOrderModule();
+  const { mutate, isPending } = useCreateOrder();
+
   //   const [orderPayload, setOrderPayload] = useState<{product_id: string, quantity: number}[]>([])
   const {
     payload: order,
@@ -66,7 +75,7 @@ const Page = () => {
 
   const { data: amount, isLoading: amountLoad } = useCartAmount(order);
   const { optionAddress } = useOption();
-  const router = useRouter()
+  const router = useRouter();
 
   // const [loading, setLoading] = useState<boolean>(true);
   // const [grouped, setGrouped] = useState<GroupedByStoreItem[]>([]);
@@ -114,13 +123,15 @@ const Page = () => {
   //   }, [deletePayload, allPro]);
   console.log(data);
   return isLoading ? (
-    <div className="w-full min-h-screen flex items-center justify-center">
+    <div className="w-full  min-h-screen flex items-center justify-center">
       <span className="loading loading-spinner"></span>
     </div>
   ) : (
-    <div className="w-full flex flex-col mt-32 px-52">
-      <h1 className="font-poppins text-2xl font-bold mb-3">Cart</h1>
-      <div className="flex flex-row w-full gap-5 ">
+    <div className="w-full max-w-[1320px] flex flex-col pt-20 sm:pt-32 ">
+      <h1 className="font-poppins text-2xl font-bold mb-3 px-3 sm:px-0">
+        Cart
+      </h1>
+      <div className="flex flex-row w-full gap-5 sm:px-0 mb-20">
         <div className="flex-1 flex flex-col gap-5">
           <div className="w-full py-3 px-4 flex flex-row rounded-lg border border-base-200">
             <label className="flex flex-row items-center gap-5" htmlFor="all">
@@ -155,7 +166,12 @@ const Page = () => {
           {rill?.data.length == 0 ? (
             <div className="w-full py-5 flex flex-col items-center justify-center rounded-lg border border-base-200">
               <h1 className="">you have no product in cart</h1>
-              <button className="btn btn-neutral btn-sm mt-3" onClick={() => router.push('/')}>Go shopping</button>
+              <button
+                className="btn btn-neutral btn-sm mt-3"
+                onClick={() => router.push("/")}
+              >
+                Go shopping
+              </button>
             </div>
           ) : (
             data?.map((dt, i) => {
@@ -207,7 +223,7 @@ const Page = () => {
             })
           )}
         </div>
-        <div className="w-80 border rounded-lg border-base-300 p-5 flex flex-col h-fit sticky top-20">
+        <div className="w-80 border rounded-lg border-base-300 p-5 hidden sm:flex flex-col h-fit sticky top-20">
           <h1 className="text- font-bold font-quicksand">Shopping summary</h1>
           {order.length < 1 ? (
             <div className="w-full flex flex-row items-center justify-between text-gray-400 mt-3 ">
@@ -250,13 +266,12 @@ const Page = () => {
                   "Please order something and select the destination"
                 );
               } else {
-
                 const dt = {
                   data: order,
                   address: address,
-                }
+                };
                 console.log(dt);
-                mutate(dt)
+                mutate(dt);
               }
             }}
           >
@@ -267,6 +282,114 @@ const Page = () => {
             )}
           </button>
         </div>
+      </div>
+      <div className="w-full fixed z-30 bottom-0 p-3 bg-white flex flex-row gap-3 sm:hidden items-center ">
+        <div className="flex-1">
+          {order.length < 1 ? (
+            <div className="w-full flex flex-col items-start justify-between text-gray-400 mt-3 ">
+              <h3 className="">Total</h3>
+              <p className="">-</p>
+            </div>
+          ) : !amountLoad ? (
+            <div className="w-full flex flex-col items-start justify-between mt-3">
+              <h3 className="">Total</h3>
+              <p className="font-bold font-poppins">
+                Rp{formatRupiah(amount?.data as number)},-
+              </p>
+            </div>
+          ) : (
+            <div className="w-full mt-3 flex items-center justify-center">
+              <span className="loading loading-spinner"></span>
+            </div>
+          )}
+        </div>
+        <button
+          className="btn btn-neutral px-10 "
+          // onClick={() => setBuyShow(true)}
+          onClick={() => {
+            if (order.length < 1) {
+              toast.error("Please order something");
+            } else {
+              (document.getElementById("my_modal_4") as any)!.showModal();
+            }
+          }}
+        >
+          {amountLoad || isPending ? (
+            <span className="loading loading-spinner"></span>
+          ) : (
+            `Order ${order.length < 1 ? "" : `(${order.length})`}`
+          )}
+        </button>
+        <dialog id="my_modal_4" className="modal">
+          <div className="modal-box">
+            <form method="dialog">
+              {/* if there is a button in form, it will close the modal */}
+              <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+                ✕
+              </button>
+            </form>
+            <h3 className="font-bold text-lg">Select Address</h3>
+            <SelectInput
+              id="selectAddress"
+              name="selectAddress"
+              option={
+                optionAddress?.length != 0 ? optionAddress : defaultOption
+              }
+              onChange={(e) => {
+                setAddress(e.target.value);
+              }}
+            />
+            <div className="flex flex-row justify-between items-center gap-3 mt-3">
+              {order.length < 1 ? (
+                <div className="w-full flex flex-col flex-1 items-start justify-between text-gray-400 mt-3 ">
+                  <h3 className="">Total</h3>
+                  <p className="">-</p>
+                </div>
+              ) : !amountLoad ? (
+                <div className="w-full flex flex-col flex-1 items-start justify-between mt-3">
+                  <h3 className="">Total</h3>
+                  <p className="font-bold font-poppins">
+                    Rp{formatRupiah(amount?.data as number)},-
+                  </p>
+                </div>
+              ) : (
+                <div className="w-full mt-3 flex items-center justify-center">
+                  <span className="loading loading-spinner"></span>
+                </div>
+              )}
+              <button
+                className="btn  btn-neutral flex-1 flex flex-row"
+                onClick={() => {
+                  if (address == "" || order.length < 1) {
+                    toast.error(
+                      "Please select the destination"
+                    );
+                  } else {
+                    const dt = {
+                      data: order,
+                      address: address,
+                    };
+                    console.log(dt);
+                    mutate(dt, {
+                      onSuccess(data, variables, context) {
+                        window.location.reload()
+                      },
+                    });
+                  }
+                }}
+              >
+                {amountLoad || isPending ? (
+                  <span className="loading loading-spinner"></span>
+                ) : (
+                  `Order ${order.length < 1 ? "" : `(${order.length})`}`
+                )}
+              </button>
+            </div>
+          </div>
+          <form method="dialog" className="modal-backdrop">
+            <button>close</button>
+          </form>
+        </dialog>
       </div>
     </div>
   );

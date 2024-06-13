@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { create } from "zustand";
 import toast from "react-hot-toast";
-import { SingleOrder } from "../order/interface";
 
 
 

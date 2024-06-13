@@ -24,7 +24,7 @@ const Template = ({ children }: TemplateProps) => {
   );
   console.log(etalase);
   return (
-    <div className="flex flex-col pt-20 px-52">
+    <div className="flex flex-col pt-20 px-3 sm:px-0 max-w-[1200px] w-full">
       {storeLoad ? (
         <div className="flex flex-row p-5 border border-base-200 rounded-md items-center justify-center">
           <span className="loading loading-spinner"></span>
@@ -35,7 +35,7 @@ const Template = ({ children }: TemplateProps) => {
             <div
               className="h-20 w-20 rounded-full overflow-hidden"
               style={{
-                backgroundImage: `url(${store?.data.avatar})`,
+                backgroundImage: `url(${store?.data.avatar?.replace('localhost:5002', process.env.IP as string)})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center center",
               }}
@@ -95,7 +95,7 @@ const Template = ({ children }: TemplateProps) => {
                     <div
                       className="h-4 w-4"
                       style={{
-                        backgroundImage: `url(${item.avatar})`,
+                        backgroundImage: `url(${item.avatar?.replace('localhost:5002', process.env.IP as string)})`,
                         backgroundSize: "cover",
                         backgroundPosition: "center center",
                       }}

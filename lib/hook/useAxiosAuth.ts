@@ -40,12 +40,12 @@ const useAxiosAuth = () => {
           } catch (err: any) {
             console.log(err);
             signOut();
-            window.location.replace("/auth/login");
+            window.location.replace("/login");
             if (err.response?.status === 401) {
               // Handle unauthorized error
             } else {
               signOut();
-              window.location.replace("/auth/login");
+              window.location.replace("/login");
             }
           }
         } else {

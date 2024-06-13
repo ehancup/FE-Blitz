@@ -60,7 +60,8 @@ const InputCurrency = ({
           "input-error": isError,
         })}
         value={value}
-        // defaultValue={parseInt("0", 0)}
+        defaultValue={value as any}
+        step={1000 as any}
         {...props}
         decimalsLimit={2}
         onValueChange={onValueChange}

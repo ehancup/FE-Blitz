@@ -38,3 +38,12 @@ export interface Profile {
 export interface ProfileResponse {
     data: Profile
 }
+
+export interface ForgotPassPayload {
+    email: string;
+}
+
+export interface ResetPassPayload {
+    password: string;
+    rpw?: string
+}

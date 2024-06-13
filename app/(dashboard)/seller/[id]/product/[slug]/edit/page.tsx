@@ -92,7 +92,7 @@ const Page = () => {
               className="w-full aspect-square rounded-md indicator"
               key={i}
               style={{
-                backgroundImage: `url(${e.image})`,
+                backgroundImage: `url(${e.image?.replace('localhost:5002', process.env.IP as string)})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center center",
               }}

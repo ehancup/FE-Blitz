@@ -7,6 +7,7 @@ import { LoginPayload } from "@/lib/auth/interface";
 import { useAuthModule } from "@/lib/auth/auth";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { Suspense } from "react";
 
 const loginSchema = yup.object().shape({
   email: yup.string().email().required().default(""),
@@ -75,6 +76,7 @@ const Page = () => {
                 isError={getIn(errors, "password")}
                 messageError={getIn(errors, "password")}
               />
+              <Link href={'/forgot-password'} className="btn btn-link btn-secondary w-fit btn-xs">{'forgot password'}</Link>
 
               <button
                 className="btn btn-primary w-full mt-4 font-medium"
@@ -95,4 +97,10 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default function Pg () {
+  return (
+      <Suspense>
+          <Page/>
+      </Suspense>
+  )
+};

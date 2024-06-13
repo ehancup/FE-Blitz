@@ -74,7 +74,7 @@ const CartItem = ({ item }: CartItemProps) => {
         onClick={() => router.push(`/product/detail/${item.product.id}`)}
         style={{
           backgroundImage: `url(${
-            (item.product.image as { image: string }[])[0].image
+            (item.product.image as { image: string }[])[0].image?.replace('localhost:5002', process.env.IP as string)
           })`,
           backgroundSize: "cover",
           backgroundPosition: "center center",
@@ -86,7 +86,10 @@ const CartItem = ({ item }: CartItemProps) => {
           onClick={() => router.push(`/product/detail/${item.product.id}`)}
         >
           <div className="flex flex-col flex-1">
-            <h1 className="">{item.product.name}</h1>
+            <h1 className="text-sm sm:text-base">{item.product.name}</h1>
+            <p className="font-poppins font-bold mt-1 text-xs block sm:hidden">
+              Rp{formatRupiah(item.product.price)}
+            </p>
             {item.product.type == "ready_stok" ? (
               <p className="text-xs text-gray-500">
                 Stock : {item.product.stock}
@@ -95,7 +98,7 @@ const CartItem = ({ item }: CartItemProps) => {
               <p className="text-xs text-gray-500">Pre Order</p>
             )}
           </div>
-          <p className="font-poppins font-bold">
+          <p className="font-poppins font-bold hidden sm:block">
             Rp{formatRupiah(item.product.price)}
           </p>
         </div>
@@ -120,7 +123,7 @@ const CartItem = ({ item }: CartItemProps) => {
           <div className="flex flex-row w-fit p-1 border border-base-300 rounded-lg gap-2">
             <button
               className="btn btn-xs btn-ghost btn-square"
-              disabled={qty == 1}
+              disabled={qty <= 1}
               onClick={decrement}
             >
               <MinusIcon className="h-4" />

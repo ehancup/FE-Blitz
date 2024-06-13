@@ -15,6 +15,7 @@ import {
   StarIcon,
   QuestionMarkCircleIcon,
   ExclamationTriangleIcon,
+  HeartIcon,
 } from "@heroicons/react/24/outline";
 
 // Import Swiper styles
@@ -32,6 +33,13 @@ import useOrderModule from "@/lib/order";
 import { SingleOrderPayload } from "@/lib/order/interface";
 // import { useRouter } from "next/router";
 
+const defaultOption = [
+  {
+    label: "you dont have any address",
+    value: "",
+  },
+];
+
 const Page = () => {
   const params = useParams();
   const router = useRouter();
@@ -39,11 +47,12 @@ const Page = () => {
   const [more, setMore] = useState<boolean>(false);
   const { useDetailProduct, useRandomProduct } = useProductModule();
   const { data: random, isLoading: randomLoad } = useRandomProduct();
-  const {useCreateSingleOrder} = useOrderModule()
-  const {mutate: order, isPending: orderLoad} = useCreateSingleOrder()
+  const { useCreateSingleOrder } = useOrderModule();
+  const { mutate: order, isPending: orderLoad } = useCreateSingleOrder();
   const { optionAddress } = useOption();
   const { useCreateWishlist } = useWishlistModule();
   const { mutate: addWishlist, isPending } = useCreateWishlist();
+  const [buyShow, setBuyShow] = useState<boolean>(false);
   const [show, setShow] = useState<number>(0);
   const [address, setAddress] = useState<string>("");
   const [swiper, setSwiper] = useState<SwipeType | null>(null);
@@ -85,19 +94,21 @@ const Page = () => {
       const payload: SingleOrderPayload = {
         address_id: address,
         product_id: data?.data.id as string,
-        quantity: quantity
-      }
+        quantity: quantity,
+      };
 
       order(payload, {
         onSuccess(data, variables, context) {
-          window.location.reload()
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
         },
-      })
+      });
     }
   };
-  const showBuyNow = () => {
+  const showBuyNow = (id: string) => {
     if (!!session) {
-      (document.getElementById("my_modal_3") as any)!.showModal();
+      (document.getElementById(id) as any)!.showModal();
     } else {
       signIn();
     }
@@ -112,16 +123,16 @@ const Page = () => {
       <span className="loading loading-spinner"></span>
     </div>
   ) : (
-    <div className="w-full flex flex-col px-52 mt-32">
+    <div className="w-full max-w-[1200px] flex flex-col pt-16 sm:pt-32">
       <div className="w-full  flex flex-row gap-10">
         <div className="flex-1 flex flex-col">
-          <div className="flex flex-row  gap-10">
-            <div className="w-72  flex flex-col sticky h-fit top-32">
+          <div className="flex flex-col sm:flex-row  gap-10">
+            <div className=" w-screen sm:w-80 flex flex-col sm:sticky h-fit top-32">
               <div className=" w-full aspect-square relative group/swiper flex flex-row items-center">
-                <button className="swipe-prev1 btn btn-xs btn-square btn-neutral absolute left-5 group-hover/swiper:left-0 z-10 opacity-0 group-hover/swiper:opacity-100 transition-all duration-150">
+                <button className="swipe-prev1 btn btn-xs hidden sm:block btn-square btn-neutral absolute left-5 group-hover/swiper:left-0 z-10 opacity-0 group-hover/swiper:opacity-100 transition-all duration-150">
                   <ChevronLeftIcon className="h-4" />
                 </button>
-                <button className="swipe-next1 btn btn-xs btn-square btn-neutral absolute right-5 group-hover/swiper:right-0 z-10 opacity-0 group-hover/swiper:opacity-100 transition-all duration-150">
+                <button className="swipe-next1 btn btn-xs hidden sm:block btn-square btn-neutral absolute right-5 group-hover/swiper:right-0 z-10 opacity-0 group-hover/swiper:opacity-100 transition-all duration-150">
                   <ChevronRightIcon className="h-4" />
                 </button>
                 <Swiper
@@ -129,7 +140,7 @@ const Page = () => {
                   // loop
                   modules={[Navigation, Pagination]}
                   spaceBetween={3}
-                  className="mySwiper w-full aspect-square rounded-xl overflow-hidden"
+                  className="mySwiper w-full aspect-square sm:rounded-xl overflow-hidden"
                   navigation={{
                     nextEl: ".swipe-next1",
                     prevEl: ".swipe-prev1",
@@ -151,7 +162,7 @@ const Page = () => {
                         <div
                           className="w-full aspect-square"
                           style={{
-                            backgroundImage: `url(${e.image})`,
+                            backgroundImage: `url(${e.image?.replace('localhost:5002', process.env.IP as string)})`,
                             backgroundSize: "cover",
                             backgroundPosition: "center center",
                           }}
@@ -162,11 +173,11 @@ const Page = () => {
                 </Swiper>
               </div>
               {(data?.data.image.length as number) > 5 ? (
-                <div className="w-full mt-3 relative group/swiper1 flex flex-row items-center">
-                  <button className="swipe-prev btn btn-xs btn-square btn-neutral absolute left-5 group-hover/swiper1:left-0 z-10 opacity-0 group-hover/swiper1:opacity-100 transition-all duration-150">
+                <div className="w-full px-3 sm:px-0 mt-3 relative group/swiper1 flex flex-row items-center">
+                  <button className="swipe-prev btn btn-xs btn-square btn-neutral absolute left-5 sm:group-hover/swiper1:left-0 group-hover/swiper1:left-3 z-10 sm:opacity-0 group-hover/swiper1:opacity-100 transition-all duration-150">
                     <ChevronLeftIcon className="h-4" />
                   </button>
-                  <button className="swipe-next btn btn-xs btn-square btn-neutral absolute right-5 group-hover/swiper1:right-0 z-10 opacity-0 group-hover/swiper1:opacity-100 transition-all duration-150">
+                  <button className="swipe-next btn btn-xs btn-square btn-neutral absolute right-5 sm:group-hover/swiper1:right-0 group-hover/swiper1:right-3 z-10 sm:opacity-0 group-hover/swiper1:opacity-100 transition-all duration-150">
                     <ChevronRightIcon className="h-4" />
                   </button>
 
@@ -211,7 +222,7 @@ const Page = () => {
                                 }
                               )}
                               style={{
-                                backgroundImage: `url(${e.image})`,
+                                backgroundImage: `url(${e.image?.replace('localhost:5002', process.env.IP as string)})`,
                                 backgroundSize: "cover",
                                 backgroundPosition: "center center",
                               }}
@@ -240,7 +251,7 @@ const Page = () => {
                           }
                         )}
                         style={{
-                          backgroundImage: `url(${e.image})`,
+                          backgroundImage: `url(${e.image?.replace('localhost:5002', process.env.IP as string)})`,
                           backgroundSize: "cover",
                           backgroundPosition: "center center",
                         }}
@@ -256,15 +267,15 @@ const Page = () => {
               )}
               {/* <div className="testd"></div> */}
             </div>
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold font-poppins">
+            <div className="flex-1 px-3 sm:px-0">
+              <h1 className="text-xl sm:text-2xl font-bold font-poppins">
                 {data?.data.name}
               </h1>
               <p className="text-sm text-gray-500">
                 <span className="text-black ">Sold</span>{" "}
                 {data?.data._count.orderDetail}
               </p>
-              <div className="flex flex-row flex-wrap mt-2 gap-3">
+              <div className="w-full flex flex-row flex-wrap mt-2 gap-3">
                 {data?.data.categoryToProduct.map((cat, i) => {
                   return (
                     <span className="badge badge-neutral badge-outline" key={i}>
@@ -290,13 +301,24 @@ const Page = () => {
                 </p>
                 <p className="text-sm">
                   <span className="text-gray-500">Etalase : </span>
-                  <button className="btn btn-ghost btn-xs text-blue-600" onClick={() => router.push(`/store/${data?.data.store.route}/${data?.data.etalase}`)}>
+                  <button
+                    className="btn btn-ghost btn-xs text-blue-600"
+                    onClick={() =>
+                      router.push(
+                        `/store/${data?.data.store.route}/${data?.data.etalase}`
+                      )
+                    }
+                  >
                     {data?.data.etalase.name}
                   </button>
                 </p>
                 <p
                   style={{ whiteSpace: "pre-line" }}
-                  className={more ? "" : "line-clamp-6 text-ellipsis"}
+                  className={
+                    more
+                      ? "text-sm sm:text-base"
+                      : "text-sm sm:text-base line-clamp-6 text-ellipsis"
+                  }
                 >
                   {data?.data.description}
                 </p>
@@ -308,11 +330,16 @@ const Page = () => {
                 </p>
               </div>
               <div className="border-t border-b border-base-200 py-3 flex flex-row items-center mt-3 justify-between">
-                <div className="flex flex-row gap-5 cursor-pointer" onClick={() => router.push(`/store/${data?.data.store.route}`)}>
+                <div
+                  className="flex flex-row gap-5 cursor-pointer"
+                  onClick={() =>
+                    router.push(`/store/${data?.data.store.route}`)
+                  }
+                >
                   <div
                     className="h-14 w-14 rounded-full"
                     style={{
-                      backgroundImage: `url(${data?.data.store.avatar})`,
+                      backgroundImage: `url(${data?.data.store.avatar?.replace('localhost:5002', process.env.IP as string)})`,
                       backgroundSize: "cover",
                       backgroundPosition: "center center",
                     }}
@@ -348,15 +375,15 @@ const Page = () => {
               </div>
             </div>
           </div>
-          <div className="w-full border-b border-base-200 mt-4 flex flex-row justify-between"></div>
-          <div className="mt-3 rounded-lg border border-base-200 flex items-center justify-center w-full py-14">
+          <div className="w-full border-b border-base-200 mt-4 flex flex-row justify-between px-3 sm:px-0"></div>
+          <div className="mt-3 rounded-lg border border-base-200 flex items-center justify-center w-full py-14 mx-3 sm:mx-0">
             <div className="flex flex-col items-center">
               <StarIcon className="h-20" />
               <h1 className="text-xl font-bold">Rating and Comments</h1>
               <p className="text-sm text-gray-500">coming soon!</p>
             </div>
           </div>
-          <div className="mt-3 rounded-lg border border-base-200 flex items-center justify-center w-full py-14">
+          <div className="mt-3 rounded-lg border border-base-200 flex items-center justify-center w-full py-14 mx-3 sm:mx-0">
             <div className="flex flex-col items-center">
               <QuestionMarkCircleIcon className="h-20" />
               <h1 className="text-xl font-bold">Disscussion Forum</h1>
@@ -364,7 +391,7 @@ const Page = () => {
             </div>
           </div>
         </div>
-        <div className="w-64 border border-base-300 p-3 rounded-xl flex flex-col h-fit sticky top-32">
+        <div className="w-64 border border-base-300 p-3 rounded-xl hidden sm:flex flex-col h-fit sticky top-32">
           <h1 className="font-bold font-quicksand">Set quantity</h1>
           <div className="w-full border-b border-base-200 mt-2"></div>
           <div className="flex flex-row items-center gap-2 mt-2">
@@ -380,7 +407,8 @@ const Page = () => {
               <button
                 className="btn btn-xs btn-ghost btn-square"
                 disabled={
-                  quantity >= (data?.data.stock as number) && data?.data.type == "ready_stok"
+                  quantity >= (data?.data.stock as number) &&
+                  data?.data.type == "ready_stok"
                 }
                 onClick={increment}
               >
@@ -389,9 +417,11 @@ const Page = () => {
             </div>
 
             {data?.data.type == "ready_stok" ? (
-              data.data.stock > 0 ?(<p className="flex flex-row gap-1 items-center">
-                Stock :<span className="font-bold">{data?.data.stock}</span>
-              </p>) : (
+              data.data.stock > 0 ? (
+                <p className="flex flex-row gap-1 items-center">
+                  Stock :<span className="font-bold">{data?.data.stock}</span>
+                </p>
+              ) : (
                 <p className="text-sm font-bold text-red-500">Out of Stock!!</p>
               )
             ) : (
@@ -409,7 +439,7 @@ const Page = () => {
           </button>
           <button
             className="btn btn-neutral btn-outline w-full mt-2"
-            onClick={showBuyNow}
+            onClick={() => showBuyNow("my_modal_3")}
           >
             Buy
           </button>
@@ -462,7 +492,7 @@ const Page = () => {
           </div>
         </div>
       </div>
-      <div className="w-full border-t border-base-200/50 mt-20 flex flex-col mb-10">
+      <div className="w-full border-t border-base-200/50 mt-20 flex flex-col mb-10 px-3 sm:px-0">
         <h1 className="text-3xl font-bold font-quicksand mt-3">
           Other Product
         </h1>
@@ -479,6 +509,135 @@ const Page = () => {
               />
             );
           })}
+        </div>
+      </div>
+      <div className="w-full fixed z-30 bottom-0 p-3 bg-white flex flex-row gap-3 sm:hidden ">
+        <button
+          className="btn btn-square btn-neutral btn-outline"
+          onClick={() => {
+            if (!!session) {
+              addWishlist(data?.data.id as string);
+            } else {
+              signIn();
+            }
+          }}
+        >
+          <HeartIcon className="h-5" />
+        </button>
+        <button
+          className="btn btn-neutral btn-outline flex-1"
+          onClick={() => setBuyShow(true)}
+        >
+          Buy
+        </button>
+        <button
+          className="btn btn-neutral  flex-1"
+          onClick={() => setBuyShow(true)}
+        >
+          +Cart
+        </button>
+      </div>
+      <div
+        className={`w-full fixed z-50 h-screen inset-x-0 flex flex-col ${
+          buyShow ? "bottom-0" : "-bottom-[100vh]"
+        } transition-all duration-300`}
+      >
+        <div
+          className={`flex-1 bg-black ${
+            buyShow ? "bg-opacity-50" : "bg-opacity-0"
+          } transition-all duration-300`}
+          onClick={() => setBuyShow(false)}
+        ></div>
+        <div className="h-40 bg-white flex flex-col justify-between">
+          <div className="flex flex-row items-center gap-2 mt-2 w-full p-3">
+            <div className="flex flex-row w-fit p-1 border border-base-300 rounded-lg gap-2 items-center">
+              <button
+                className="btn btn-sm btn-ghost btn-square"
+                disabled={quantity == 1}
+                onClick={decrement}
+              >
+                <MinusIcon className="h-4" />
+              </button>
+              <p className="">{quantity}</p>
+              <button
+                className="btn btn-sm btn-ghost btn-square"
+                disabled={
+                  quantity >= (data?.data.stock as number) &&
+                  data?.data.type == "ready_stok"
+                }
+                onClick={increment}
+              >
+                <PlusIcon className="h-4" />
+              </button>
+            </div>
+
+            {data?.data.type == "ready_stok" ? (
+              data.data.stock > 0 ? (
+                <p className="flex flex-row gap-1 items-center">
+                  Stock :<span className="font-bold">{data?.data.stock}</span>
+                </p>
+              ) : (
+                <p className="text-sm font-bold text-red-500">Out of Stock!!</p>
+              )
+            ) : (
+              <p className="font-bold">Pre Order</p>
+            )}
+          </div>
+          <div className="flex flex-row w-full p-3 gap-3">
+            <button
+              className="btn btn-neutral btn-outline flex-1"
+              onClick={() => {
+                setBuyShow(false);
+                showBuyNow("my_modal_4");
+              }}
+            >
+              Buy
+            </button>
+            <button
+              className="btn btn-neutral  flex-1"
+              onClick={() => {
+                addToCart();
+                setBuyShow(false);
+              }}
+            >
+              +Cart
+            </button>
+            <dialog id="my_modal_4" className="modal">
+              <div className="modal-box">
+                <form method="dialog">
+                  {/* if there is a button in form, it will close the modal */}
+                  <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+                    ✕
+                  </button>
+                </form>
+                <h3 className="font-bold text-lg">Select Address</h3>
+                <SelectInput
+                  id="selectAddress"
+                  name="selectAddress"
+                  option={
+                    optionAddress?.length != 0 ? optionAddress : defaultOption
+                  }
+                  onChange={(e) => {
+                    setAddress(e.target.value);
+                  }}
+                />
+                <div className="flex flex-row justify-between items-center gap-10 mt-3">
+                  <p className="py-4 flex flex-col items-start text-xs">
+                    Total
+                    <span className="font-bold text-base">
+                      Rp{formatRupiah((data?.data.price || 0) * quantity)},-
+                    </span>
+                  </p>
+                  <button className="btn  btn-neutral flex-1" onClick={buyNow}>
+                    Buy ({quantity})
+                  </button>
+                </div>
+              </div>
+              <form method="dialog" className="modal-backdrop">
+                <button>close</button>
+              </form>
+            </dialog>
+          </div>
         </div>
       </div>
     </div>

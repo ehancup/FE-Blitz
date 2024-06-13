@@ -3,27 +3,29 @@ import usePop from "@/lib/hook/usePop";
 import { signIn, useSession } from "next-auth/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import NavDraw from "./navDraw";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useAuthModule } from "@/lib/auth/auth";
 import { ShoppingBagIcon, ShoppingCartIcon } from "@heroicons/react/24/outline";
 
-const Navbar = () => {
+const Nv = () => {
+  
   const searchParam = useSearchParams()
   const [target , setTarget] = useState<string>(searchParam.get('q') || "")
   const { useProfile } = useAuthModule();
   const router = useRouter();
   const pathName = usePathname();
   const { isOpen, popToggle } = usePop((res) => res);
-  const disableRoute = ["/register", "/login", "/seller"];
-  const spesificRoute = /^\/(login|register|seller(?:\/.*)?)$/;
+  const disableRoute = ["/register", "/login", "/seller", "/forgot-password"];
+  const spesificRoute = /^\/(login|forgot-password|sent|reset-password(?:\/.*)|register|seller(?:\/.*)?)$/;
   const { status } = useSession();
   const { data } = useProfile();
   console.log(data);
+  console.log((data?.data.avatar)?.replace('localhost', process.env.IP as string));
   useEffect(() => {
     console.log(isOpen, status);
   }, [isOpen, status]);
   return !spesificRoute.test(pathName) ? (
-    <div className="w-full navbar fixed z-10 top-0 inset-x-0 bg-base-100 flex flex-row justify-between shadow-md gap-2  sm:gap-32">
+    <div className="w-full navbar fixed z-50 top-0 inset-x-0 bg-base-100 flex flex-row justify-between shadow-md gap-2  sm:gap-32">
       <div className="hidden sm:block">
         <a className="btn btn-ghost text-2xl text-blitz" onClick={() => router.push('/')}>Blitz.co</a>
       </div>
@@ -93,7 +95,7 @@ const Navbar = () => {
             <div
               className="h-7 w-7 rounded-full overflow-hidden"
               style={{
-                backgroundImage: `url(${data?.data.avatar})`,
+                backgroundImage: `url(${((data?.data.avatar)?.replace('localhost:5002', process.env.IP as string))})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center center",
               }}
@@ -114,4 +116,10 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default function Navbar () {
+  return (
+      <Suspense>
+          <Nv/>
+      </Suspense>
+  )
+};
