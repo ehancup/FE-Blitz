@@ -305,7 +305,7 @@ const Page = () => {
                     className="btn btn-ghost btn-xs text-blue-600"
                     onClick={() =>
                       router.push(
-                        `/store/${data?.data.store.route}/${data?.data.etalase}`
+                        `/store/${data?.data.store.route}/${data?.data.etalase.id}`
                       )
                     }
                   >
