@@ -1,7 +1,8 @@
 import { format, parseISO, isValid } from 'date-fns';
+import {  toZonedTime } from 'date-fns-tz';
 import { id } from 'date-fns/locale';
 
-export const formatDate = (date: number | string | Date, args?: { format?: 'default' | 'server' }) => {
+export const formatDate = (date: number | string | Date, args?: { format?: 'default' | 'server' | 'short' }) => {
   if (!date) return '-'
 
   const formatValue = typeof date === 'string' ? new Date(date) : date;
@@ -9,6 +10,9 @@ export const formatDate = (date: number | string | Date, args?: { format?: 'defa
 
   if (args?.format === 'server') {
     return format(formatValue, 'yyyy-MM-dd', { locale: id })
+  }
+  if (args?.format === 'short') {
+    return format(formatValue, 'd MMM', { locale: id })
   }
 
   return format(formatValue, 'd MMM yyyy', { locale: id });
@@ -27,6 +31,12 @@ export const formatDateTime = (date: number | string | Date) => {
 
   return format(formatValue, 'd MMMM yyyy HH:mm', { locale: id });
 };
+
+export const formatHour =  (date: number | string | Date) => {
+  const formatValue = typeof date === 'string' ? new Date(date) : date;
+
+  return format(formatValue, 'HH:mm', { locale: id });
+}
 
 export const getCurrentDate = () => format(new Date(), 'EEEE, dd MMMM yyyy', { locale: id });
 
@@ -86,3 +96,18 @@ export function getDifferenceInDays(date1:number, date2:number) {
   const diffInDays = Math.round(diffInTime / oneDay); // Selisih hari bulat
   return diffInDays;
 }
+
+export const getIndonesiaTime = (): Date => {
+  const now = new Date();
+  // Offset in minutes for WIB (UTC+7)
+  const indonesiaOffset = 7 * 60;
+  // Current UTC time in milliseconds
+  const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
+  // Current time in Indonesia (WIB)
+  const indonesiaTime = new Date(utcTime + (indonesiaOffset * 60000));
+  return indonesiaTime;
+  // const timeZone = 'Asia/Jakarta';
+  // const now = new Date();
+  // const indonesiaTime = toZonedTime(now, timeZone);
+  // return indonesiaTime;
+};

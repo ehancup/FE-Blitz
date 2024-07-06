@@ -26,7 +26,8 @@ const config: Config = {
     // }
   },
   plugins: [
-    require('daisyui')
+    require('daisyui'),
+    require('tailwind-scrollbar')
   ],
   daisyui: {
     themes: ["bumblebee", "dark", "cmyk"],

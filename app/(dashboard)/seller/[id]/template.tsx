@@ -1,6 +1,6 @@
 "use client";
 import { ReactElement, ReactNode } from "react";
-import { HomeIcon, InboxStackIcon, ShoppingBagIcon, ArchiveBoxIcon } from "@heroicons/react/24/outline";
+import { HomeIcon, InboxStackIcon, ShoppingBagIcon, ArchiveBoxIcon, ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { HtmlContext } from "next/dist/server/future/route-modules/app-page/vendored/contexts/entrypoints";
 import useStoreModule from "@/lib/store";
@@ -34,6 +34,11 @@ const menus: { label: string; route: string; icon: ReactElement }[] = [
     label: "Order",
     route: "/order",
     icon: <ArchiveBoxIcon className="h-5 font-bold" />,
+  },
+  {
+    label: "Chat",
+    route: "/chat",
+    icon: <ChatBubbleLeftRightIcon className="h-5 font-bold" />,
   },
 ];
 
@@ -89,13 +94,13 @@ const Template = ({ children }: TemplateProps) => {
               <span className="loading loading-spinner"></span>
             </button>
           ) : (
-            <div className="dropdown dropdown-right dropdown-end">
+            <div className="dropdown dropdown-right dropdown-end bg-white">
               <div tabIndex={0} className="btn btn-outline btn-lg ">
                 <div className="flex flex-row gap-3 w-full">
                   <div
                     className="h-10 aspect-square rounded-full"
                     style={{
-                      backgroundImage: `url(${dataDetail?.data.avatar?.replace('localhost:5002', process.env.IP as string)})`,
+                      backgroundImage: `url(${dataDetail?.data.avatar?.replace('http://localhost:5002', process.env.IP as string)})`,
                       backgroundSize: "cover",
                       backgroundPosition: "center center",
                     }}
@@ -110,7 +115,7 @@ const Template = ({ children }: TemplateProps) => {
               </div>
               <ul
                 tabIndex={0}
-                className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 ml-5 "
+                className="dropdown-content menu p-2 shadow bg-opacity-100 z-40 bg-white rounded-box w-52 ml-5  "
               >
                 {myLoad ? (
                   <li>
@@ -129,7 +134,7 @@ const Template = ({ children }: TemplateProps) => {
                           <div
                             className="h-10 aspect-square rounded-full"
                             style={{
-                              backgroundImage: `url(${data.avatar?.replace('localhost:5002', process.env.IP as string)})`,
+                              backgroundImage: `url(${data.avatar?.replace('http://localhost:5002', process.env.IP as string)})`,
                               backgroundSize: "cover",
                               backgroundPosition: "center center",
                             }}
@@ -145,9 +150,9 @@ const Template = ({ children }: TemplateProps) => {
           )}
         </div>
       </div>
-      <div className="flex-1">
-        <div className="flex flex-col p-8 ">
-          <div className="w-full flex flex-row justify-between">
+      <div className="flex-1 ">
+        <div className="flex flex-col p-8 min-h-screen gap-10">
+          <div className="w-full flex flex-row justify-between items-center">
             <h1 className="text-xl font-poppins">
               Welcome back, {profile?.data.name}
             </h1>
@@ -158,14 +163,14 @@ const Template = ({ children }: TemplateProps) => {
               <div
                 className="h-10 aspect-square rounded-full"
                 style={{
-                  backgroundImage: `url(${profile?.data.avatar?.replace('localhost:5002', process.env.IP as string)})`,
+                  backgroundImage: `url(${profile?.data.avatar?.replace('http://localhost:5002', process.env.IP as string)})`,
                   backgroundSize: "cover",
                   backgroundPosition: "center center",
                 }}
               ></div>
             </div>
           </div>
-          <div className="w-full">{children}</div>
+          {children}
         </div>
       </div>
     </div>

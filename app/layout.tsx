@@ -6,6 +6,7 @@ import { Toaster } from "react-hot-toast";
 import NextAuthProvider from "@/components/nextauth";
 import { ReactNode } from "react";
 import { Session } from "next-auth";
+import socket from "@/utils/socket.utils";
 
 export const metadata: Metadata = {
   title: "Create Next App",

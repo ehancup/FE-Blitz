@@ -66,7 +66,7 @@ const TransactionItem = ({ order }: TransactionProps) => {
             <div
               className="w-14 rounded-md overflow-hidden h-14"
               style={{
-                backgroundImage: `url(${order?.orderDetail[0]?.product?.image?.[0]?.image?.replace('localhost:5002', process.env.IP as string)})`,
+                backgroundImage: `url(${order?.orderDetail[0]?.product?.image?.[0]?.image?.replace('http://localhost:5002', process.env.IP as string)})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center center",
               }}
@@ -126,7 +126,7 @@ const TransactionItem = ({ order }: TransactionProps) => {
                     Detail Transaction
                   </h3>
                 </div>
-                <div className="flex-1 w-full overflow-y-scroll">
+                <div className="flex-1 w-full overflow-y-scroll scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-300">
                   {isPending ? (
                     <div className=" h-full justify-center items-center flex">
                       <span className="loading loading-spinner"></span>

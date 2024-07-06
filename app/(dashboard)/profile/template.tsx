@@ -9,6 +9,7 @@ import {
   CreditCardIcon,
   TagIcon,
   ShoppingBagIcon,
+  ChatBubbleLeftRightIcon
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 // import useAdminModule from "../lib";
@@ -51,6 +52,11 @@ const Template = ({ children }: TemplateProps) => {
       route: "/transaction",
       icon: <CreditCardIcon className="h-4"/>
     },
+    {
+      label: "Chat",
+      route: "/chat",
+      icon: <ChatBubbleLeftRightIcon className="h-4"/>
+    },
     // {
     //   label: "Order",
     //   route: "/order",
@@ -58,7 +64,7 @@ const Template = ({ children }: TemplateProps) => {
     // },
   ];
   return (
-    <div className="pt-16 pb-16 px-52 w-full flex flex-row gap-7 ">
+    <div className="pt-16 px-3 sm:px-0 max-w-[1190px] w-full flex flex-row gap-7 ">
       <div className="min-h-96 h-fit w-60 mt-5 bg-base-100 shadow-lg rounded-xl flex flex-col py-3">
         <div className="py-2 px-3 border-b border-neutral">
           <h1 className="font-bold text-xl font-poppin">

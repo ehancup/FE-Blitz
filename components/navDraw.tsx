@@ -69,7 +69,7 @@ const NavDraw = ({ name, role, isOpen = false, image }: NavDrawProps) => {
           <div
             className="h-full w-full rounded-full"
             style={{
-              backgroundImage: `url(${image?.replace('localhost:5002', process.env.IP as string)})`,
+              backgroundImage: `url(${image?.replace('http://localhost:5002', process.env.IP as string)})`,
               backgroundSize: "cover",
               backgroundPosition: "center center",
             }}
@@ -128,7 +128,7 @@ const NavDraw = ({ name, role, isOpen = false, image }: NavDrawProps) => {
           <div
             className="h-14 w-14 rounded-full"
             style={{
-              backgroundImage: `url(${image?.replace('localhost:5002', process.env.IP as string)})`,
+              backgroundImage: `url(${image?.replace('http://localhost:5002', process.env.IP as string)})`,
               backgroundSize: "cover",
               backgroundPosition: "center center",
             }}

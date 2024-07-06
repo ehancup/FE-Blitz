@@ -74,7 +74,7 @@ const CartItem = ({ item }: CartItemProps) => {
         onClick={() => router.push(`/product/detail/${item.product.id}`)}
         style={{
           backgroundImage: `url(${
-            (item.product.image as { image: string }[])[0].image?.replace('localhost:5002', process.env.IP as string)
+            (item.product.image as { image: string }[])[0].image?.replace('http://localhost:5002', process.env.IP as string)
           })`,
           backgroundSize: "cover",
           backgroundPosition: "center center",

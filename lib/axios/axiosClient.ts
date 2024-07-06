@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 
 export const axiosClient: AxiosInstance = axios.create({
-  baseURL: `http://${process.env.IP}`,
+  baseURL: `${process.env.IP}`,
   headers: { "Content-Type": "application/json" },
 });
 

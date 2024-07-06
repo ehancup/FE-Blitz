@@ -32,8 +32,8 @@ const InputText = ({
   const [isHide, setIsHide] = useState<boolean>(true);
   return (
     <label className="form-control w-full" htmlFor={name}>
-      <div className="label mb- ">
-        {label ? (
+      {label ? (
+        <div className="label ">
           <span
             className={`label-text font-medium text-base ${
               isError ? "text-error" : ""
@@ -42,10 +42,10 @@ const InputText = ({
             {label}
             {isRequired ? <span className="text-red-600">*</span> : <></>}
           </span>
-        ) : (
-          <></>
-        )}
-      </div>
+        </div>
+      ) : (
+        <></>
+      )}
       <div
         className={clsx(
           "input input-bordered w-full flex items-center gap-2 ",
@@ -65,8 +65,16 @@ const InputText = ({
           type={type || (isHide && protect ? "password" : "text")}
         />
         {protect ? (
-          <button className="btn btn-circle btn-ghost btn-sm" onClick={() => setIsHide(prev => !prev)} type="button">
-            {isHide ? <EyeSlashIcon className="w-4 h-4 opacity-70" /> : <EyeIcon className="w-4 h-4 opacity-70"/>}
+          <button
+            className="btn btn-circle btn-ghost btn-sm"
+            onClick={() => setIsHide((prev) => !prev)}
+            type="button"
+          >
+            {isHide ? (
+              <EyeSlashIcon className="w-4 h-4 opacity-70" />
+            ) : (
+              <EyeIcon className="w-4 h-4 opacity-70" />
+            )}
           </button>
         ) : (
           <div className="hidden"></div>

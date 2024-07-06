@@ -11,7 +11,7 @@ const DetailTransactionItem = ({item} : DetailTransactionProps) => {
     return (
         <div className="px-3 pb-3 pt-6 border border-base-200 rounded-lg flex flex-row items-start gap-2">
             <div className="w-14 h-14 rounded-md overflow-hidden" style={{
-            backgroundImage: `url(${item.product.image?.[0].image?.replace('localhost:5002', process.env.IP as string)})`,
+            backgroundImage: `url(${item.product.image?.[0].image?.replace('http://localhost:5002', process.env.IP as string)})`,
             backgroundSize: "cover",
             backgroundPosition: "center center",
           }}></div>

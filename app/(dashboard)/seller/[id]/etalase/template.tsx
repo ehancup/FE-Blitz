@@ -27,7 +27,7 @@ const Template = ({ children }: TemplateProps) => {
                   <div
                     className="h-4 w-4"
                     style={{
-                      backgroundImage: `url(${item.avatar?.replace('localhost:5002', process.env.IP as string)})`,
+                      backgroundImage: `url(${item.avatar?.replace('http://localhost:5002', process.env.IP as string)})`,
                       backgroundSize: "cover",
                       backgroundPosition: "center center",
                     }}

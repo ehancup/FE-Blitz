@@ -30,7 +30,7 @@ const ProductCard = ({ image, name, price, store, id }: CardProps) => {
         className="w-full aspect-square rounded-lg overflow-hidden"
         onClick={() => router.push(`/product/detail/${id}`)}
         style={{
-          backgroundImage: `url(${image?.replace('localhost:5002', process.env.IP as string)})`,
+          backgroundImage: `url(${image?.replace('http://localhost:5002', process.env.IP as string)})`,
           backgroundSize: "cover",
           backgroundPosition: "center center",
         }}

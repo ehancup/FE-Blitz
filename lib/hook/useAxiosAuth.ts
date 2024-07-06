@@ -32,20 +32,23 @@ const useAxiosAuth = () => {
         if (401 === error?.response?.status && !prevRequest?.sent) {
           prevRequest.sent = true;
           try {
+            console.log('try');
             await refreshToken();
+            console.log('success');
             prevRequest.headers[
               "Authorization"
             ] = `Bearer ${session?.user?.accessToken}`;
             return axiosClient(prevRequest);
           } catch (err: any) {
             console.log(err);
+            console.log('logout');
             signOut();
-            window.location.replace("/login");
+            // window.location.replace("/login");
             if (err.response?.status === 401) {
               // Handle unauthorized error
-            } else {
-              signOut();
               window.location.replace("/login");
+            } else {
+              // signOut();
             }
           }
         } else {

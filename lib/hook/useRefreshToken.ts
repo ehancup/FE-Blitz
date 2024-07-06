@@ -18,19 +18,23 @@ export const useRefreshToken = () => {
 
     const { user } = session as Session & { user: SessionUser };
 
-    const res = await axiosClient.post("/admin/refresh-token", {
-      refresh_token: user.refreshToken,
-      id: user.id,
+    console.log(user);
+    console.log(session.user.refreshToken);
+
+    const res = await axiosClient.get("/auth/refresh-token", {
+      headers: {
+        Authorization: `Bearer ${session.user.refreshToken}`,
+      },
     });
 
-    
+    console.log(res);
 
     await update({
       ...session,
       user: {
         ...user,
-        accessToken: res.data.accessToken,
-        refreshToken: res.data.refreshToken,
+        accessToken: res.data.data.access_token,
+        refreshToken: res.data.data.refresh_token,
       },
     });
   };

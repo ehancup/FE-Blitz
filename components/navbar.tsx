@@ -8,26 +8,33 @@ import { useAuthModule } from "@/lib/auth/auth";
 import { ShoppingBagIcon, ShoppingCartIcon } from "@heroicons/react/24/outline";
 
 const Nv = () => {
-  
-  const searchParam = useSearchParams()
-  const [target , setTarget] = useState<string>(searchParam.get('q') || "")
+  const searchParam = useSearchParams();
+  const [target, setTarget] = useState<string>(searchParam.get("q") || "");
   const { useProfile } = useAuthModule();
   const router = useRouter();
   const pathName = usePathname();
   const { isOpen, popToggle } = usePop((res) => res);
   const disableRoute = ["/register", "/login", "/seller", "/forgot-password"];
-  const spesificRoute = /^\/(login|forgot-password|sent|reset-password(?:\/.*)|register|seller(?:\/.*)?)$/;
+  const spesificRoute =
+    /^\/(login|forgot-password|sent|reset-password(?:\/.*)|register|seller(?:\/.*)?)$/;
   const { status } = useSession();
   const { data } = useProfile();
   console.log(data);
-  console.log((data?.data.avatar)?.replace('localhost', process.env.IP as string));
+  console.log(
+    data?.data.avatar?.replace("localhost", process.env.IP as string)
+  );
   useEffect(() => {
     console.log(isOpen, status);
   }, [isOpen, status]);
   return !spesificRoute.test(pathName) ? (
-    <div className="w-full navbar fixed z-50 top-0 inset-x-0 bg-base-100 flex flex-row justify-between shadow-md gap-2  sm:gap-32">
+    <div className="w-full navbar fixed z-50 px-10 top-0 inset-x-0 bg-base-100 flex flex-row justify-between shadow-md gap-2  sm:gap-32">
       <div className="hidden sm:block">
-        <a className="btn btn-ghost text-2xl text-blitz" onClick={() => router.push('/')}>Blitz.co</a>
+        <a
+          className="btn btn-ghost text-2xl text-blitz"
+          onClick={() => router.push("/")}
+        >
+          Blitz.co
+        </a>
       </div>
       <div className="flex-1">
         <label className="input input-bordered input-sm flex items-center gap-2 w-full">
@@ -43,11 +50,18 @@ const Nv = () => {
               clipRule="evenodd"
             />
           </svg>
-          <input type="text" className="grow" placeholder="Search" onKeyUp={(e) => {
-            if (e.key == "Enter") {
-              router.push(`/product?q=${target}`)
-            }
-          }} onChange={(e) => setTarget(e.target.value)} value={target}/>
+          <input
+            type="text"
+            className="grow"
+            placeholder="Search"
+            onKeyUp={(e) => {
+              if (e.key == "Enter") {
+                router.push(`/product?q=${target}`);
+              }
+            }}
+            onChange={(e) => setTarget(e.target.value)}
+            value={target}
+          />
         </label>
       </div>
       {status == "loading" ? (
@@ -58,7 +72,10 @@ const Nv = () => {
         </div>
       ) : status == "unauthenticated" ? (
         <div className="flex flex-row gap-1 ms:gap-5">
-          <button className="btn btn-sm sm:btn-md btn-primary" onClick={() => signIn()}>
+          <button
+            className="btn btn-sm sm:btn-md btn-primary"
+            onClick={() => signIn()}
+          >
             Login
           </button>
           <button
@@ -71,21 +88,28 @@ const Nv = () => {
       ) : (
         <div className="flex flex-row">
           <div className="flex-row gap-3 mr-3 hidden sm:flex">
-            <button className="btn btn-ghost btn-square btn-sm tooltip tooltip-bottom" data-tip="cart" onClick={() => router.push('/cart')}>
+            <button
+              className="btn btn-ghost btn-square btn-sm tooltip tooltip-bottom"
+              data-tip="cart"
+              onClick={() => router.push("/cart")}
+            >
               <div className="indicator">
-              <span className="indicator-item badge badge-primary badge-sm"></span>
+                <span className="indicator-item badge badge-primary badge-sm"></span>
 
-              <ShoppingCartIcon className="h-6"/>
+                <ShoppingCartIcon className="h-6" />
               </div>
             </button>
-            <button className="btn btn-ghost btn-square btn-sm tooltip tooltip-bottom" data-tip="wishlist" onClick={() => router.push('/product/wishlist')}>
+            <button
+              className="btn btn-ghost btn-square btn-sm tooltip tooltip-bottom"
+              data-tip="wishlist"
+              onClick={() => router.push("/product/wishlist")}
+            >
               <div className="indicator">
-              <span className="indicator-item badge badge-primary badge-sm text-xs"></span>
+                <span className="indicator-item badge badge-primary badge-sm text-xs"></span>
 
-              <ShoppingBagIcon className="h-6"/>
+                <ShoppingBagIcon className="h-6" />
               </div>
             </button>
-            
           </div>
           <button
             className="btn btn-ghost flex flex-row gap-3"
@@ -95,7 +119,10 @@ const Nv = () => {
             <div
               className="h-7 w-7 rounded-full overflow-hidden"
               style={{
-                backgroundImage: `url(${((data?.data.avatar)?.replace('localhost:5002', process.env.IP as string))})`,
+                backgroundImage: `url(${data?.data.avatar?.replace(
+                  "http://localhost:5002",
+                  process.env.IP as string
+                )})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center center",
               }}
@@ -116,10 +143,10 @@ const Nv = () => {
   );
 };
 
-export default function Navbar () {
+export default function Navbar() {
   return (
-      <Suspense>
-          <Nv/>
-      </Suspense>
-  )
-};
+    <Suspense>
+      <Nv />
+    </Suspense>
+  );
+}

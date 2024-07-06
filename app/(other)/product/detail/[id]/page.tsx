@@ -16,6 +16,7 @@ import {
   QuestionMarkCircleIcon,
   ExclamationTriangleIcon,
   HeartIcon,
+  ChatBubbleLeftEllipsisIcon,
 } from "@heroicons/react/24/outline";
 
 // Import Swiper styles
@@ -31,6 +32,7 @@ import SelectInput from "@/components/selectInput";
 import useOption from "@/lib/hook/useOption";
 import useOrderModule from "@/lib/order";
 import { SingleOrderPayload } from "@/lib/order/interface";
+import useChatModule from "@/lib/chat";
 // import { useRouter } from "next/router";
 
 const defaultOption = [
@@ -45,6 +47,8 @@ const Page = () => {
   const router = useRouter();
   const { data: session } = useSession();
   const [more, setMore] = useState<boolean>(false);
+  const {useUserCreateRoom} = useChatModule()
+  const {mutate: chat} = useUserCreateRoom()
   const { useDetailProduct, useRandomProduct } = useProductModule();
   const { data: random, isLoading: randomLoad } = useRandomProduct();
   const { useCreateSingleOrder } = useOrderModule();
@@ -86,6 +90,14 @@ const Page = () => {
       signIn();
     }
   };
+
+  const startChat = (storeId : string) => {
+    chat(storeId, {
+      onSuccess(data, variables, context) {
+        router.push(`/profile/chat?room=${data.data.data.id}`)
+      },
+    })
+  }
 
   const buyNow = () => {
     if (address == "") {
@@ -162,7 +174,10 @@ const Page = () => {
                         <div
                           className="w-full aspect-square"
                           style={{
-                            backgroundImage: `url(${e.image?.replace('localhost:5002', process.env.IP as string)})`,
+                            backgroundImage: `url(${e.image?.replace(
+                              "http://localhost:5002",
+                              process.env.IP as string
+                            )})`,
                             backgroundSize: "cover",
                             backgroundPosition: "center center",
                           }}
@@ -222,7 +237,10 @@ const Page = () => {
                                 }
                               )}
                               style={{
-                                backgroundImage: `url(${e.image?.replace('localhost:5002', process.env.IP as string)})`,
+                                backgroundImage: `url(${e.image?.replace(
+                                  "http://localhost:5002",
+                                  process.env.IP as string
+                                )})`,
                                 backgroundSize: "cover",
                                 backgroundPosition: "center center",
                               }}
@@ -251,7 +269,10 @@ const Page = () => {
                           }
                         )}
                         style={{
-                          backgroundImage: `url(${e.image?.replace('localhost:5002', process.env.IP as string)})`,
+                          backgroundImage: `url(${e.image?.replace(
+                            "http://localhost:5002",
+                            process.env.IP as string
+                          )})`,
                           backgroundSize: "cover",
                           backgroundPosition: "center center",
                         }}
@@ -339,7 +360,10 @@ const Page = () => {
                   <div
                     className="h-14 w-14 rounded-full"
                     style={{
-                      backgroundImage: `url(${data?.data.store.avatar?.replace('localhost:5002', process.env.IP as string)})`,
+                      backgroundImage: `url(${data?.data.store.avatar?.replace(
+                        "http://localhost:5002",
+                        process.env.IP as string
+                      )})`,
                       backgroundSize: "cover",
                       backgroundPosition: "center center",
                     }}
@@ -476,7 +500,12 @@ const Page = () => {
               <button>close</button>
             </form>
           </dialog>
-          <div className="w-full flex justify-center mt-3">
+          <div className="w-full flex flex-row justify-center mt-3 items-center">
+            <button className="btn btn-xs btn-ghost flex flex-row items-center" onClick={() => startChat(data?.data.store.id as string)}>
+              <ChatBubbleLeftEllipsisIcon className="h-3" />
+              <p className="">chat</p>
+            </button>
+            <p className="text-gray-300">|</p>
             <button
               className="btn btn-xs btn-ghost"
               onClick={() => {
@@ -487,7 +516,8 @@ const Page = () => {
                 }
               }}
             >
-              add to wishlist
+              <HeartIcon className="h-3" />
+              <p className="">wishlist</p>
             </button>
           </div>
         </div>
