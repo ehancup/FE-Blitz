@@ -11,7 +11,7 @@ interface SessionUser {
 }
 
 export const useRefreshToken = () => {
-  const { data: session, update } = useSession();
+  const { data: session, update } = useSession(); 
 
   const refreshToken = async () => {
     if (!session) return;

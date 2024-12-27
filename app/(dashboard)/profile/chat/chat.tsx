@@ -16,15 +16,18 @@ import {
 } from "@/utils/date.utils";
 import InputText from "@/components/inputText";
 import { useEffect, useRef, useState } from "react";
-import socket from "@/utils/socket.utils";
+// import socket from "@/utils/socket.utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
+import { Socket } from "socket.io-client";
+import toast from "react-hot-toast";
 
 interface ChatPageProps {
   id: string;
+  socket: undefined | Socket;
 }
 
-const ChatPage = ({ id }: ChatPageProps) => {
+const ChatPage = ({ id, socket }: ChatPageProps) => {
   const queryClient = useQueryClient();
   const { data: session } = useSession();
   const { useDetailRoom, useUserChat, useUserSend } = useChatModule();
@@ -49,7 +52,7 @@ const ChatPage = ({ id }: ChatPageProps) => {
           onSuccess(data, variables, context) {
             setMessage("");
             scrollToBottom();
-            socket.emit("user_send", { room: id, id: detail?.data.store.id });
+            socket?.emit("user_send", { room: id, id: detail?.data.store.id });
           },
         }
       );
@@ -60,20 +63,14 @@ const ChatPage = ({ id }: ChatPageProps) => {
   useEffect(() => scrollToBottom(), [chat]);
 
   useEffect(() => {
-    socket.on("user_recieve", (i) => {
+    socket?.on("user_recieve", (i) => {
       console.log(i);
+      console.log("use menerima pesan baru");
       queryClient.invalidateQueries({
         queryKey: ["chat/user-chat"],
       });
     });
-    socket.on("user_notif", (i) => {
-      console.log(i);
-      if (session?.user.id == i) {
-        queryClient.invalidateQueries({
-          queryKey: ["chat/user-room"],
-        });
-      }
-    });
+
   });
 
   // useEffect(() => {

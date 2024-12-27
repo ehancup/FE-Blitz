@@ -7,14 +7,15 @@ import { useParams, useRouter } from "next/navigation";
 import { ReactNode, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
+// import { ResizableBox } from 'react-resizable';
 
 interface TemplateProps {
-    children: ReactNode;
+  children: ReactNode;
 }
 
-const Template = ({children}: TemplateProps) => {
+const Template = ({ children }: TemplateProps) => {
   const [deletePayload, setDeletePayload] = useState<string[]>([]);
-  const router = useRouter()
+  const router = useRouter();
   const params = useParams();
   const { useProductByStore, useDeleteBulk } = useProductModule();
   const {
@@ -28,12 +29,12 @@ const Template = ({children}: TemplateProps) => {
     handlePageSize,
   } = useProductByStore((params as { id: string }).id);
 
-  const {mutate, isPending} = useDeleteBulk(params.id as string)
+  const { mutate, isPending } = useDeleteBulk(params.id as string);
 
   const deleteMany = () => {
     if (deletePayload.length <= 0) {
-      toast.error('select at least one product');
-      return ;
+      toast.error("select at least one product");
+      return;
     }
 
     Swal.fire({
@@ -46,14 +47,17 @@ const Template = ({children}: TemplateProps) => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        mutate({data: deletePayload}, {
-          onSuccess(data, variables, context) {
-            router.push(`/seller/${params.id}/product`)
-          },
-        });
+        mutate(
+          { data: deletePayload },
+          {
+            onSuccess(data, variables, context) {
+              router.push(`/seller/${params.id}/product`);
+            },
+          }
+        );
       }
     });
-  }
+  };
 
   const checked = useMemo(() => {
     if (!allPro) {
@@ -65,16 +69,21 @@ const Template = ({children}: TemplateProps) => {
   }, [deletePayload, allPro]);
   //   console.log(allPro);
   return (
-    <div className="w-full flex flex-col ">
+    <div className="w-full flex flex-col px-8">
       <div className="w-full flex flex-row gap-3">
         <div className="flex-1 rounded-lg shadow-lg h-fit">
           <div className="flex flex-row px-3 pt-3 justify-end gap-2">
-            {deletePayload.length != 0 ? (
-              <button className="btn btn-sm btn-error" onClick={deleteMany}>Delete checked</button>
-            ) : (
-              <></>
+            {deletePayload.length != 0 && (
+              <button className="btn btn-sm btn-error" onClick={deleteMany}>
+                Delete checked
+              </button>
             )}
-            <button className="btn btn-neutral btn-sm" onClick={() => router.push(`/seller/${params.id}/add/product`)}>Add Product</button>
+            <button
+              className="btn btn-neutral btn-sm"
+              onClick={() => router.push(`/seller/${params.id}/add/product`)}
+            >
+              Add Product
+            </button>
           </div>
           <div className="">
             <div className="overflow-x-auto mt-2">
@@ -129,9 +138,18 @@ const Template = ({children}: TemplateProps) => {
                   ) : allPro?.data.length != 0 ? (
                     allPro?.data.map((pro, i) => {
                       return (
-                        <tr key={i} className={clsx('cursor-pointer', {
-                          "bg-blue-600/15 w-full rounded-md" : pro.id == params.slug
-                        })} onClick={() => router.push(`/seller/${params.id}/product/${pro.id}`)}>
+                        <tr
+                          key={i}
+                          className={clsx("cursor-pointer", {
+                            "bg-blue-600/15 w-full rounded-md":
+                              pro.id == params.slug,
+                          })}
+                          onClick={() =>
+                            router.push(
+                              `/seller/${params.id}/product/${pro.id}`
+                            )
+                          }
+                        >
                           <th>
                             <label>
                               <input
@@ -182,8 +200,8 @@ const Template = ({children}: TemplateProps) => {
                       );
                     })
                   ) : (
-                    <tr className="" >
-                      <th className="" colSpan={5} >
+                    <tr className="">
+                      <th className="" colSpan={5}>
                         no product yet
                       </th>
                     </tr>

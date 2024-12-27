@@ -44,7 +44,7 @@ const Page = () => {
           <div className="py-2 px-3 border-b border-base-300 rounded-md">
             <h1 className="font-monserrat font-medium">My Store </h1>
           </div>
-          <div className="px-5  flex justify-between flex-row items-end">
+          <div className="px-5  flex justify-between flex-row items-end mt-3">
             <div className="flex flex-row gap-3 items-end">
               <InputText
                 id="search"

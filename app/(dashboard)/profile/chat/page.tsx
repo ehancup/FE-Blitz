@@ -1,8 +1,7 @@
 "use client";
 import InputText from "@/components/inputText";
 import { Suspense, useEffect, useRef, useState } from "react";
-import socket from "../../../../utils/socket.utils";
-// import { io } from "socket.io-client";
+// import socket from "../../../../utils/socket.utils";
 import useChatModule from "@/lib/chat";
 import {
   Cog6ToothIcon,
@@ -16,10 +15,17 @@ import {
   getIndonesiaTime,
 } from "@/utils/date.utils";
 import { useSearchParams } from "next/navigation";
+import { Socket, io } from "socket.io-client";
+import { useSession } from "next-auth/react";
+import { useQueryClient } from "@tanstack/react-query";
 
 // const socket = io(`http://${process.env.IP}`);
+let chatSocket: undefined | Socket ;
+
 const Page = () => {
   const searchParams = useSearchParams();
+  const {data:session} = useSession();
+  const queryClient = useQueryClient()
   const initialRoom = searchParams.get("room");
   let rmid = useRef<string>();
   const [room, setRoom] = useState<string>(initialRoom || "");
@@ -30,33 +36,53 @@ const Page = () => {
 
   console.log(data);
 
-  const selectRoom = (roomId: string) => {
-    setRoom((prev) => {
-      if (prev != "") socket.emit("leave_room", prev);
-
-      return roomId;
-    });
-    socket.emit("join_room", roomId);
-  };
-
   useEffect(() => {
+    chatSocket?.on("user_notif", (i) => {
+      console.log(i);
+      if (session?.user.id == i) {
+        queryClient.invalidateQueries({
+          queryKey: ["chat/user-room"],
+        });
+      }
+    });
+  })
+  
+  useEffect(() => {
+    chatSocket = io(process.env.IP as string);
+    console.log(session?.user);
+
     const leave = () => {
       console.log(rmid.current);
       if (rmid.current != "") {
-        socket.emit("leave_room", rmid.current);
+        chatSocket?.emit("leave_room", { id: rmid.current });
         console.log("leaving");
       }
     };
+    
     return () => {
       leave();
       console.log("leave page caht");
+      chatSocket?.disconnect();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  
+  const selectRoom = async (roomId: string) => {
+    await setRoom((prev) => {
+      if (prev != "") chatSocket?.emit("leave_room", { id: prev });
+
+      return roomId;
+    });
+    chatSocket?.emit("join_room", { id: roomId });
+  };
 
   useEffect(() => {
     rmid.current = room;
   }, [room]);
+
+  useEffect(() => {
+    if (initialRoom && initialRoom !== "") chatSocket?.emit("join_room", { id: initialRoom });
+  }, [initialRoom])
 
   // useEffect(() => {
   //   const addMessage = (i: string) => {
@@ -148,40 +174,36 @@ const Page = () => {
                     <div className=" flex flex-col flex-1 ">
                       <div className="w-full flex-row flex items-center gap-2 justify-between">
                         <h1
-                          className={clsx("font-medium text-lg line-clamp-1 text-ellipsis", {
-                            // "text-blue-600": e.id == room,
-                          })}
+                          className={clsx(
+                            "font-medium text-lg line-clamp-1 text-ellipsis",
+                            {
+                              // "text-blue-600": e.id == room,
+                            }
+                          )}
                         >
                           {e.store.name}
                         </h1>
                         {diffDate == 0 ? (
-                          <p className="text-sm text-gray-500">
-                            Today
-                          </p>
+                          <p className="text-sm text-gray-500">Today</p>
                         ) : diffDate == 1 ? (
-                          <p className="text-sm text-gray-500">
-                            Yesterday
-                          </p>
+                          <p className="text-sm text-gray-500">Yesterday</p>
                         ) : (
                           <p className="text-sm text-gray-500">
-                          {formatDate(e.chats[0]?.created_at, {
-                            format: "short",
-                          })}
-                        </p>
+                            {formatDate(e.chats[0]?.created_at, {
+                              format: "short",
+                            })}
+                          </p>
                         )}
-                        
                       </div>
                       <div className="w-full flex flex-row items-center justify-between gap-2">
                         <p className="text-sm text-gray-400 line-clamp-1 text-ellipsis">
                           {e.chats[0]?.message}
                         </p>
-                        {e._count.chats > 0 ? (
+                        {e._count.chats > 0 && (
                           <span className="badge badge-info badge-sm">
                             {e._count.chats}
                           </span>
-                        ) : (
-                          <></>
-                        )}
+                        ) }
                       </div>
                     </div>
                   </div>
@@ -196,7 +218,7 @@ const Page = () => {
               start chatting
             </div>
           ) : (
-            <ChatPage id={room} />
+            <ChatPage id={room} socket={chatSocket} />
           )}
         </div>
       </div>

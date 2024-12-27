@@ -77,7 +77,7 @@ const Template = ({ children }: TemplateProps) => {
     setFilterQuery((prev) => ({ ...prev, status: p }));
   };
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col px-8">
       <h1 className="text-3xl font-bold">Order List</h1>
       <div className="w-full flex gap-5 flex-row mt-5">
         <div className="w-96 rounded-lg shadow-xl py-5 flex flex-col">

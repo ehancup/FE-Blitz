@@ -27,7 +27,7 @@ const Nv = () => {
     console.log(isOpen, status);
   }, [isOpen, status]);
   return !spesificRoute.test(pathName) ? (
-    <div className="w-full navbar fixed z-50 px-10 top-0 inset-x-0 bg-base-100 flex flex-row justify-between shadow-md gap-2  sm:gap-32">
+    <div className="w-full navbar fixed z-50 px-10 top-0 inset-x-0 bg-base-100 flex flex-row justify-between shadow-md gap-2  sm:gap-10">
       <div className="hidden sm:block">
         <a
           className="btn btn-ghost text-2xl text-blitz"

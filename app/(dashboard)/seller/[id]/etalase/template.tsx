@@ -14,7 +14,7 @@ const Template = ({ children }: TemplateProps) => {
   const { data, isLoading } = useEtalaseByStore(params.id as string);
   console.log(data);
   return (
-    <div className="grid grid-cols-3 mt-3 gap-7">
+    <div className="grid grid-cols-3 mt-3 gap-7 px-8">
       <div className="rounded-xl shadow-lg min-h-96 flex flex-col p-5">
         <div className="flex flex-row">
           <button className="btn btn-info btn-sm" onClick={() => router.push(`/seller/${params.id}/etalase/add`)}>add</button>

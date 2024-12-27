@@ -26,6 +26,7 @@
     "react-dom": "^18",
     "react-hot-toast": "^2.4.1",
     "react-input-emoji": "^5.9.0",
+    "react-resizable": "^3.0.5",
     "react-spinners": "^0.13.8",
     "sharp": "^0.33.4",
     "socket.io-client": "^4.7.5",

@@ -33,3 +33,16 @@ body {
     text-wrap: balance;
   }
 } */
+
+.ver-infinite {
+  animation: scrollver 20s linear infinite ;
+}
+
+@keyframes scrollver {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}

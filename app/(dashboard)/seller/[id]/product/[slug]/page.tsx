@@ -84,7 +84,7 @@ const Page = () => {
           <tr>
             <th className="align-top">Desc</th>
             <th className="align-top">:</th>
-            <td>{data?.data.description}</td>
+            <td className="line-clamp-6">{data?.data.description}</td>
           </tr>
           <tr>
             <th className="align-top">Created At</th>

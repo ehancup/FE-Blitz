@@ -16,15 +16,17 @@ import {
 } from "@/utils/date.utils";
 import InputText from "@/components/inputText";
 import { useEffect, useRef, useState } from "react";
-import socket from "@/utils/socket.utils";
+// import socket from "@/utils/socket.utils";
 import { useQueryClient } from "@tanstack/react-query";
+import { Socket } from "socket.io-client";
 
 interface ChatPageProps {
   id: string;
   store: string;
+  socket: undefined | Socket;
 }
 
-const ChatPage = ({ id, store }: ChatPageProps) => {
+const ChatPage = ({ id, store, socket }: ChatPageProps) => {
   const queryClient = useQueryClient();
   const { useDetailRoom, useStoreChat, useStoreSend } = useChatModule();
   const { data: detail, isLoading: detailLoad } = useDetailRoom(id);
@@ -44,14 +46,14 @@ const ChatPage = ({ id, store }: ChatPageProps) => {
 
   const sendMessage = () => {
     console.log(message);
-    if (message != "") {
+    if (message.trim() != "") {
       send(
-        { message },
+        { message : message.trim() },
         {
           onSuccess(data, variables, context) {
             setMessage("");
             scrollToBottom();
-            socket.emit("store_send", { room: id, id: detail?.data.user.id });
+            socket?.emit("store_send", { room: id, id: detail?.data.user.id });
           },
         }
       );
@@ -62,20 +64,20 @@ const ChatPage = ({ id, store }: ChatPageProps) => {
   useEffect(() => scrollToBottom(), [chat]);
 
   useEffect(() => {
-    socket.on("store_recieve", (i) => {
+    socket?.on("store_recieve", (i) => {
       console.log(i);
       queryClient.invalidateQueries({
         queryKey: ["chat/store-chat"],
       });
     });
-    socket.on("store_notif", (i) => {
-      console.log(i);
-      if (i == store) {
-        queryClient.invalidateQueries({
-          queryKey: ["chat/store-room"],
-        });
-      }
-    });
+    // socket?.on("store_notif", (i) => {
+    //   console.log(i);
+    //   if (i == store) {
+    //     queryClient.invalidateQueries({
+    //       queryKey: ["chat/store-room"],
+    //     });
+    //   }
+    // });
   });
 
   // useEffect(() => {

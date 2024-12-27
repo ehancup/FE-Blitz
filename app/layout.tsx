@@ -18,31 +18,30 @@ interface NextAuthProps {
   session: Session | null | undefined;
 }
 
-export default function RootLayout({
-  children, session
-}: NextAuthProps) {
+export default function RootLayout({ children, session }: NextAuthProps) {
   return (
     <html lang="en" data-theme="bumblebee">
       <body>
         <NextAuthProvider session={session}>
-
-        <ReactQuery>{children}</ReactQuery>
+          <ReactQuery>{children}</ReactQuery>
         </NextAuthProvider>
-        <Toaster position="top-center" 
-        // toastOptions={{
-        //   className: 'top-10',
-        //   style: {
-        //     top: '100px'
-        //   }
-        // }}
-        toastOptions={{
-          duration: 1500
-        }}
-        containerStyle={{
-          top: 80,
-          zIndex: 999999999
-        }}
-         reverseOrder={false} />
+        <Toaster
+          position="top-center"
+          // toastOptions={{
+          //   className: 'top-10',
+          //   style: {
+          //     top: '100px'
+          //   }
+          // }}
+          toastOptions={{
+            duration: 1500,
+          }}
+          containerStyle={{
+            top: 80,
+            zIndex: 999999999,
+          }}
+          reverseOrder={false}
+        />
       </body>
     </html>
   );

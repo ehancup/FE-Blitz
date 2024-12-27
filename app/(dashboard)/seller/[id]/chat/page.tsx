@@ -12,47 +12,64 @@ import {
 import clsx from "clsx";
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import socket from "@/utils/socket.utils";
+// import socket from "@/utils/socket.utils";
 import ChatPage from "./chat";
+import { io, Socket } from "socket.io-client";
+import { useQueryClient } from "@tanstack/react-query";
+
+let chatSocket : undefined | Socket;
 
 const Page = () => {
   const params = useParams();
   let rmid = useRef<string>();
+  const queryClient = useQueryClient()
   const [room, setRoom] = useState<string>("");
   const { useStoreRoom } = useChatModule();
   const { data, isLoading } = useStoreRoom(params.id as string);
   console.log(data);
 
-  const selectRoom = (roomId: string) => {
-    setRoom((prev) => {
-      if (prev != "") socket.emit("leave_room", prev);
-
-      return roomId;
-    });
-    socket.emit("join_room", roomId);
-  };
+  
 
   useEffect(() => {
+    chatSocket = io(process.env.IP as string)
     const leave = () => {
       console.log(rmid.current);
       if (rmid.current != "") {
-        socket.emit("leave_room", rmid.current);
+        chatSocket?.emit("leave_room", { id: rmid.current });
         console.log("leaving");
       }
     };
+    chatSocket?.on("store_notif", (i) => {
+      console.log(i);
+      if (i == params.id) {
+        queryClient.invalidateQueries({
+          queryKey: ["chat/store-room"],
+        });
+      }
+    });
     return () => {
       leave();
       console.log("leave page caht");
+      chatSocket?.disconnect()
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const selectRoom = (roomId: string) => {
+    setRoom((prev) => {
+      if (prev != "") chatSocket?.emit("leave_room", { id: prev });
+
+      return roomId;
+    });
+    chatSocket?.emit("join_room", { id: roomId });
+  };
 
   useEffect(() => {
     rmid.current = room;
   }, [room]);
 
   return (
-    <div className="w-full h-[780px] flex ">
+    <div className="w-full flex-1 md:h-[780px] flex ">
       <div className="grow flex items-center justify-center ">
         {" "}
         {/** jangan dihapus div nya */}
@@ -81,7 +98,7 @@ const Page = () => {
                 </div>
               ) : data?.data.length == 0 ? (
                 <div className="w-full h-full flex justify-center mt-3 text-gray-300">
-                  find product and start chatting
+                  no one in chat...
                 </div>
               ) : (
                 data?.data.map((e, i) => {
@@ -135,13 +152,11 @@ const Page = () => {
                           <p className="text-sm text-gray-400 line-clamp-1 text-ellipsis">
                             {e.chats[0]?.message}
                           </p>
-                          {e._count.chats > 0 ? (
+                          {e._count.chats > 0 && (
                             <span className="badge badge-info badge-sm">
                               {e._count.chats}
                             </span>
-                          ) : (
-                            <></>
-                          )}
+                          ) }
                         </div>
                       </div>
                     </div>
@@ -156,7 +171,7 @@ const Page = () => {
                 start chatting
               </div>
             ) : (
-              <ChatPage id={room} store={params.id as string} />
+              <ChatPage id={room} store={params.id as string} socket={chatSocket} />
             )}
           </div>
         </div>

@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { Product } from "@/lib/product/interface";
 import { axiosClient } from "@/lib/axios/axiosClient";
 import { Swiper, SwiperSlide, useSwiper } from "swiper/react";
-import { Pagination, Navigation, Autoplay} from "swiper/modules";
+import { Pagination, Navigation, Autoplay, EffectCreative } from "swiper/modules";
 import "swiper/css";
 import banner1 from "../public/banner1.webp";
 import banner2 from "../public/banner2.webp";
@@ -53,7 +53,7 @@ export default function Home() {
       setLoading(true);
       setPage((prevPage) => prevPage + 1);
       const res = await axiosClient
-        .get("/product/list", { params: { page } }) 
+        .get("/product/list", { params: { page } })
         .then((res) => res.data);
       console.log(res);
       setProducts((prevProducts) => [...prevProducts, ...(res as any).data]);
@@ -62,91 +62,109 @@ export default function Home() {
   };
 
   return (
-    <div className=" w-full max-w-[1100px] pt-16 sm:pt-28 flex flex-col">
-      <div className="w-full sm:rounded-xl bg-blue-600 mb-10 aspect-[4/1] overflow-hidden relative group/swiper flex flex-row items-center">
-        <button className="swipe-prev1 btn btn-xs hidden sm:flex btn-square btn-neutral absolute left-5 group-hover/swiper:left-0 z-10 opacity-0 group-hover/swiper:opacity-100 transition-all duration-150">
-          <ChevronLeftIcon className="h-4" />
-        </button>
-        <button className="swipe-next1 btn btn-xs hidden sm:flex btn-square btn-neutral absolute right-5 group-hover/swiper:right-0 z-10 opacity-0 group-hover/swiper:opacity-100 transition-all duration-150">
-          <ChevronRightIcon className="h-4" />
-        </button>
-        <Swiper
-          slidesPerView={1}
-          modules={[Navigation, Autoplay]}
-          className="w-full h-full mySwiper"
-          navigation={{
-            nextEl: ".swipe-next1",
-            prevEl: ".swipe-prev1",
-          }}
-          loop
-          autoplay={{
-            delay: 3000
-          }}
-        >
-          <SwiperSlide>
-            <div
-              className="w-full h-full "
-              style={{
-                backgroundImage: `url(${banner1.src})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center center",
-              }}
-            ></div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div
-              className="w-full h-full "
-              style={{
-                backgroundImage: `url(${banner2.src})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center center",
-              }}
-            ></div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div
-              className="w-full h-full "
-              style={{
-                backgroundImage: `url(${banner3.src})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center center",
-              }}
-            ></div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div
-              className="w-full h-full "
-              style={{
-                backgroundImage: `url(${banner4.src})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center center",
-              }}
-            ></div>
-          </SwiperSlide>
-        </Swiper>
+    <div className="w-screen flex flex-col items-center">
+      <div className="w-full p-2 bg-blue-500 mt-16 ">
+        <div className="w-full flex items-center justify-center flex-row gap-10">
+          <p className="text-white">belanja hanya di Blitz - dapatkan <span className="font-bold">Diskon</span> hingga <span className="font-bold">100%</span></p>
+          <p className="text-white">barang eksklusif berkualitas hanya di <span className="font-bold">Blitz</span> </p>
+        </div>
       </div>
-      <h1 className="text-3xl font-bold px-3 sm:px-0">All Product</h1>
-      <div className="w-full mt-5 grid grid-cols-2 sm:grid-cols-6 gap-x-3 gap-y-5 px-3 sm:px-0">
-        {products.map((product, i) => {
-          return (
-            <ProductCard
-              id={product.id}
-              name={product.name}
-              image={(product.image as { image: string }[])[0].image}
-              price={product.price}
-              store={product.store.name}
-              key={i}
-            />
-          );
-        })}
-      </div>
-      <div className="w-full py-5 flex items-center justify-center">
-        <button
-          className="btn btn-neutral btn-outline btn-wide"
-          onClick={handleLoadMore}
-        >
-          {loading ? "Loading..." : "Load More"}
-        </button>
+      <div className=" w-full max-w-[1100px] pt-16 sm:pt-10 flex flex-col ">
+        <div className="w-full sm:rounded-xl  mb-10 aspect-[4/1] overflow-hidden relative group/swiper flex flex-row items-center">
+          <button className="swipe-prev1 btn btn-xs hidden sm:flex btn-square btn-neutral absolute left-5 group-hover/swiper:left-0 z-10 opacity-0 group-hover/swiper:opacity-100 transition-all duration-150">
+            <ChevronLeftIcon className="h-4" />
+          </button>
+          <button className="swipe-next1 btn btn-xs hidden sm:flex btn-square btn-neutral absolute right-5 group-hover/swiper:right-0 z-10 opacity-0 group-hover/swiper:opacity-100 transition-all duration-150">
+            <ChevronRightIcon className="h-4" />
+          </button>
+          <Swiper
+            slidesPerView={1}
+            modules={[Navigation, Autoplay, EffectCreative]}
+            effect="creative"
+            creativeEffect={{
+              prev: {
+                shadow: true,
+                translate: [0, 0, -700],
+              },
+              next: {
+                translate: ['100%', 0, 0],
+              },
+            }}
+            className="w-full h-full mySwiper"
+            navigation={{
+              nextEl: ".swipe-next1",
+              prevEl: ".swipe-prev1",
+            }}
+            loop
+            autoplay={{
+              delay: 5000,
+            }}
+          >
+            <SwiperSlide>
+              <div
+                className="w-full h-full "
+                style={{
+                  backgroundImage: `url(${banner1.src})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center center",
+                }}
+              ></div>
+            </SwiperSlide>
+            <SwiperSlide>
+              <div
+                className="w-full h-full "
+                style={{
+                  backgroundImage: `url(${banner2.src})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center center",
+                }}
+              ></div>
+            </SwiperSlide>
+            <SwiperSlide>
+              <div
+                className="w-full h-full "
+                style={{
+                  backgroundImage: `url(${banner3.src})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center center",
+                }}
+              ></div>
+            </SwiperSlide>
+            <SwiperSlide>
+              <div
+                className="w-full h-full "
+                style={{
+                  backgroundImage: `url(${banner4.src})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center center",
+                }}
+              ></div>
+            </SwiperSlide>
+          </Swiper>
+        </div>
+        <h1 className="text-3xl font-bold px-3 sm:px-0">All Product</h1>
+        <div className="w-full mt-5 grid grid-cols-2 sm:grid-cols-6 gap-x-3 gap-y-5 px-3 sm:px-0">
+          {products.map((product, i) => {
+            return (
+              <ProductCard
+                id={product.id}
+                name={product.name}
+                image={(product.image as { image: string }[])[0].image}
+                price={product.price}
+                store={product.store.name}
+                key={i}
+              />
+            );
+          })}
+        </div>
+        <div className="w-full py-5 flex items-center justify-center">
+          <button
+            className="btn btn-neutral btn-outline btn-wide"
+            onClick={handleLoadMore}
+          >
+            {loading ? "Loading..." : "Load More"}
+          </button>
+        </div>
       </div>
     </div>
   );

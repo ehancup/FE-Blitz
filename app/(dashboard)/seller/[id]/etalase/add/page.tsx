@@ -117,8 +117,8 @@ const Page = () => {
               messageError={getIn(errors, "name")}
               label="Name"
             />
-            <button className="btn btn-info w-fit self-end" type="submit">
-              submit
+            <button className="btn btn-info w-fit self-end" type="submit" disabled={isPending}>
+              {isPending ? (<span className="loading loading-spinner"></span>) : "submit"}
             </button>
           </Form>
         </FormikProvider>
